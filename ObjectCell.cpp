@@ -10,6 +10,7 @@ ObjectCell::ObjectCell() {
     this->pObjectScene = NULL;
 }
 
+// objet appartient à une scène
 ObjectCell::ObjectCell(ObjectScene * pObjectScene) {
     this->pObjectScene = pObjectScene;
 }
@@ -19,10 +20,11 @@ void ObjectCell::CalculateEyeCoordinates() {
   	while (currentVertex != NULL) {
   	  	currentVertex->eyePos.VectorMatrix(currentVertex->worldPos, pObjectScene->viewTransformation);
 
-  	  	if (currentVertex->eyePos.GetZ() < pObjectScene->zParams.zMin)
+  	  	if (currentVertex->eyePos.GetZ() < pObjectScene->zParams.zMin) {
   	  	  	pObjectScene->zParams.zMin = currentVertex->eyePos.GetZ();
-  	  	else if (currentVertex->eyePos.GetZ() > pObjectScene->zParams.zMax)
+		} else if (currentVertex->eyePos.GetZ() > pObjectScene->zParams.zMax) {
   	  	  	pObjectScene->zParams.zMax = currentVertex->eyePos.GetZ();
+		}
 
   	  	currentVertex = currentVertex->next;
     }
@@ -40,9 +42,10 @@ void ObjectCell::RemovePolygonIfHidden(PolygonCell * currentPolygon) {
   	Vector viewDirection;
 
   	while (currentPolygon != NULL) {
-  	  	viewDirection.SetX( pObjectScene->viewRefPoint.GetXView() - currentPolygon->vertexListHead->vertex->worldPos.GetX());
-  	  	viewDirection.SetY( pObjectScene->viewRefPoint.GetYView() - currentPolygon->vertexListHead->vertex->worldPos.GetY());
-  	  	viewDirection.SetZ( pObjectScene->viewRefPoint.GetZView() - currentPolygon->vertexListHead->vertex->worldPos.GetZ());
+		VertexCell * currentVertexHead = currentPolygon->vertexListHead->vertex;
+  	  	viewDirection.SetX( pObjectScene->viewRefPoint.GetXView() - currentVertexHead->worldPos.GetX());
+  	  	viewDirection.SetY( pObjectScene->viewRefPoint.GetYView() - currentVertexHead->worldPos.GetY());
+  	  	viewDirection.SetZ( pObjectScene->viewRefPoint.GetZView() - currentVertexHead->worldPos.GetZ());
 
   	  	currentPolygon->polyVisible = (viewDirection.DotProduct(currentPolygon->polyNormal) > 0);
   	  	currentPolygon = currentPolygon->next;

@@ -70,8 +70,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam) {
 
   	  	  	  	case IDM_OPEN:
   	  	  	    	// Load an object
-					if (!WireframeFunction(WIREFRAME_LOAD_OBJECT, hWnd, 0, 0))
+					if (!WireframeFunction(WIREFRAME_LOAD_OBJECT, hWnd, 0, 0)) {
 				    	RefreshScreen(hWnd);
+					}
 
 					return 0;
 
@@ -81,8 +82,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam) {
 				    return 0;
 
   	  	  	  	case IDM_RENDER_SCENE:
-					if (!WireframeFunction(WIREFRAME_RENDER_SCENE, hWnd, 0, 0))
+					if (!WireframeFunction(WIREFRAME_RENDER_SCENE, hWnd, 0, 0)) {
 				    	RefreshScreen(hWnd);
+					}
 					return 0;
 
 				case IDM_TRANSFORMATION:

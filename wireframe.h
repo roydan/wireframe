@@ -2,6 +2,20 @@
 #define WIREFRAME_H
 /********************************************************************************
  *
+ * v110
+ * 23/05/2012
+ *
+ * files modified:
+ * 21/05/2012	ObjectScene.h / .cpp / .o
+ * 21/05/2012	wireframe_app.cpp
+ * 21/05/2012	wireframe.cpp
+ * 21/05/2012	Matrix4x4.cpp
+ * 21/05/2012	renderer.cpp
+ * 21/05/2012	Matrix.cpp
+ * 23/05/2012	ObjectCell.h / .cpp / .o
+ *
+ ********************************************************************************
+ *
  * v100
  * 21/05/2012
  * Original Baseline
@@ -13,7 +27,7 @@
 #include "ViewPointRec.h"
 
 // version
-#define WIREFRAME_VERSION          100
+#define WIREFRAME_VERSION          110
 
 // variables globales
 

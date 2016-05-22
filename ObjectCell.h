@@ -62,6 +62,7 @@ private:
     class ObjectScene * pObjectScene;
 
 	void RemovePolygonIfHidden(PolygonCell *);
+
 	void CalculatePolygonNormals();
 	void CalculateAPolygonNormal(PolygonCell *);
 	void CalculateVertexNormals();
@@ -85,8 +86,10 @@ public:
   	
     ObjectCell();
   	ObjectCell(ObjectScene * pObjectScene);
+
 	void CalculateEyeCoordinates();
 	void RemoveHiddenSurfaces();
+
 	void CalculateNormals();
 	void TransformToWorldCoordinates();
 	void GetTransformation(int, Vector);

@@ -193,12 +193,15 @@ void ObjectScene::TransformScene() {
 }
 
 void ObjectScene::CalculateScreenCoordinates() {
+  	SurfaceCell * currentSurface;
   	PolygonCell * currentPolygon;
   	VertexList *  vertexList;
 
   	ObjectCell * currentObject = objectHead;
   	while (currentObject != NULL) {
+
   	  	switch (currentObject->type) {
+
   	  	  	case OBJECT_AXIS:
             {
   	  	  	  	VertexCell * vertex = currentObject->vertexHead;
@@ -212,15 +215,17 @@ void ObjectScene::CalculateScreenCoordinates() {
 
   	  	  	case OBJECT_SURFACE:
             {
-  	  	  	  	SurfaceCell * currentSurface = currentObject->surfaceHead;
+  	  	  	  	currentSurface = currentObject->surfaceHead;
   	  	  	  	while (currentSurface != NULL) {
   	  	  	  	  	currentPolygon = currentSurface->polygonHead;
   	  	  	  	  	while (currentPolygon != NULL) {
   	  	  	  	  	  	if (currentPolygon->polyVisible) {
   	  	  	  	  	  	  	vertexList = currentPolygon->vertexListHead;
   	  	  	  	  	  	  	while (vertexList != NULL) {
-								vertexList->vertex->screenPos.Perspective(vertexList->vertex->eyePos, viewRefPoint, mapOffsets);
-								vertexList->vertex->screenPos.SetZ( (int)((vertexList->vertex->eyePos.GetZ() - zParams.zMin) / zParams.zRange * DEV_MAX_Z_RES));
+  								VertexCell * currentVertex = vertexList->vertex;
+
+								currentVertex->screenPos.Perspective(currentVertex->eyePos, viewRefPoint, mapOffsets);
+								currentVertex->screenPos.SetZ( (int)((currentVertex->eyePos.GetZ() - zParams.zMin) / zParams.zRange * DEV_MAX_Z_RES));
   	  	  	  	  	  	  	  	vertexList = vertexList->next;
   	  	  	  	  	  	  	}
   	  	  	  	  	  	}
@@ -379,9 +384,9 @@ void ObjectScene::ReadAPolygon(int surfaceCount, PolygonCell * currentPolygon, O
 
   	  	fscanf(objectFile, " %d", &currentVertex);
 
-  	  	if (currentObject->surfaceAt[currentVertex - 1] == 0)
+  	  	if (currentObject->surfaceAt[currentVertex - 1] == 0) {
   	  	  	currentObject->surfaceAt[currentVertex - 1] = surfaceCount;
-  	  	else {
+		} else {
   	  	  	if (currentObject->surfaceAt[currentVertex - 1] != surfaceCount) {
   	  	  	  	(currentObject->noVertices)++;
 				currentObject->surfaceAt[currentVertex - 1] = surfaceCount;
@@ -407,8 +412,9 @@ int ObjectScene::AddPolygonToPolygonList(PolygonCell * currentPolygon, PolygonLi
   	  	if (*polyList == NULL) return 1;			//++ added
   	  	(*polyList)->poly = currentPolygon;
   	  	(*polyList)->next = NULL;
-  	} else
+  	} else {
   	  	AddPolygonToPolygonList(currentPolygon, &((*polyList)->next));
+	}
 
 	return 0;
 }

@@ -80,10 +80,13 @@ Matrix4x4 operator * (Matrix4x4 m1, Matrix4x4 m2) {
 	Matrix4x4 m3;
   	m3.Zero();
 
-  	for (i = 0; i < MATRIX_4X4_SIZE; i++)
-  	  	for (j = 0; j < MATRIX_4X4_SIZE; j++)
-			for (k = 0; k < MATRIX_4X4_SIZE; k++)
+  	for (i = 0; i < MATRIX_4X4_SIZE; i++) {
+  	  	for (j = 0; j < MATRIX_4X4_SIZE; j++) {
+			for (k = 0; k < MATRIX_4X4_SIZE; k++) {
   	      		m3.matrix[i][j] = m3.matrix[i][j] + m1.matrix[i][k] * m2.matrix[k][j];
+			}
+		}
+	}
 	return m3;
 }
 

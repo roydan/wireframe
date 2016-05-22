@@ -37,12 +37,12 @@ public:
     FILE *       objectFile;
 
 	void WireFrameScene(HWND);
+	void CalculateScreenCoordinates();
 
 	ObjectScene(HWND hWnd);
     void SetViewVariables();
     void SetViewTransformation();
 	void TransformScene();
-	void CalculateScreenCoordinates();
     bool LoadScene(HWND, char *, char *);
     bool LoadObject(char *, char *);
 };

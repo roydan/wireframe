@@ -73,10 +73,11 @@ int WireframeFunction(int iMsg, HWND hWnd, WPARAM wParam, LPARAM lParam) {
 			strcpy(objectName, "");
 
 			if (fileObject.PopFileOpen(hWnd, fileName, objectName)) {
-  	  	  		if (pObjectScene->LoadObject(fileName, objectName) == false)
+  	  	  		if (pObjectScene->LoadObject(fileName, objectName) == false) {
   	  	    		pObjectScene->sceneChanged = true;
-			  	else
+				} else {
 					return 1;
+				}
 			}
         }	
   	    break;
@@ -84,8 +85,9 @@ int WireframeFunction(int iMsg, HWND hWnd, WPARAM wParam, LPARAM lParam) {
   	  	case WIREFRAME_WM_PAINT:
   	  	  	// Wireframe scene
 			if (pObjectScene->noOfObjects > 0) {
-  	  	    	if (pObjectScene->sceneChanged)
+  	  	    	if (pObjectScene->sceneChanged) {
   	  	      		pObjectScene->TransformScene();
+				}
   	  	    	pObjectScene->WireFrameScene(hWnd);
 			}
   	  	    break;
@@ -101,36 +103,40 @@ int WireframeFunction(int iMsg, HWND hWnd, WPARAM wParam, LPARAM lParam) {
 			strcpy(sceneName, "");
 
 			if (fileScene.PopFileOpen(hWnd, fileName, sceneName)) {
-  	  	  		if (pObjectScene->LoadScene(hWnd, fileName, sceneName) == false)
+  	  	  		if (pObjectScene->LoadScene(hWnd, fileName, sceneName) == false) {
   	  	    		pObjectScene->sceneChanged = true;
-			  	else
+				} else {
 					return 1;
+				}
 			}
 			return 0;
             //*******************************************************
              
 			// Render Scene
-			if (pObjectScene->noOfObjects > 0)
+			if (pObjectScene->noOfObjects > 0) {
 				RenderScene(hWnd, pObjectScene->objectHead);
-  	  	  	else
+			} else {
   	  	    	MessageBox(NULL, "No objects currently loaded", NULL, MB_OK);
+			}
         }
         break;
 
   	  	case WIREFRAME_TRANSFORM_OBJECT:
   	  	  	// Transform an object
-			if (pObjectScene->noOfObjects > 0)
+			if (pObjectScene->noOfObjects > 0) {
   	  	    	DialogBoxParam(hInst, "TRANSFORMATION_DLG", hWnd, TransformationDlgProc, 0L);
-  	  	  	else
+			} else {
   	  	    	MessageBox(NULL, "No objects currently loaded", NULL, MB_OK);
+			}
   	  	  	break;
 
   	  	case WIREFRAME_VIEW_POINT:
   	  	  	// Move view point
-			if (pObjectScene->noOfObjects > 0)
+			if (pObjectScene->noOfObjects > 0) {
   	  	    	DialogBoxParam(hInst, "POINT_VUE_DLG", hWnd, ViewRefPointDlgProc, 0L);
-  	  	  	else
+			} else {
   	  	    	MessageBox(NULL, "No objects currently loaded", NULL, MB_OK);
+			}
   	  	  	break;
 
   	  	case WIREFRAME_WM_DESTROY:
@@ -175,8 +181,9 @@ BOOL CALLBACK TransformationDlgProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPAR
 		  	SendDlgItemMessage(hwndDlg, IDC_CB_OBJECT, CB_SETCURSEL, (WPARAM)index, 0);
 
 		  	currentObject = pObjectScene->objectHead;
-		  	for (LONG i = 0; i < index; i++)
+		  	for (LONG i = 0; i < index; i++) {
 				currentObject = currentObject->next;
+			}
 
   	    	InitTransformationDlg(hwndDlg, &rv, &sv, &tv);
 		  	return FALSE;
@@ -190,8 +197,9 @@ BOOL CALLBACK TransformationDlgProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPAR
 						{
 				        	index = SendDlgItemMessage(hwndDlg, IDC_CB_OBJECT, CB_GETCURSEL, 0, 0);
 				        	currentObject = pObjectScene->objectHead;
-				        	for (LONG i = 0; i < index; i++)
+				        	for (LONG i = 0; i < index; i++) {
 					    	  	currentObject = currentObject->next;
+							}
 				        	return TRUE;
 						}
 					}

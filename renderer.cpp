@@ -54,10 +54,11 @@ void RenderPixel(int x, int y, double i, Vector w)
   	HPEN hPen, hPenOld;
   	HDC  hDC;
 
-  	if (i < 0)
+  	if (i < 0) {
   	  	i = Ka;
-  	else
+	} else {
   	  	i = Ka + (Kd * woodGrain(w));
+	}
 
   	if (i > 1) i = 1;
 
@@ -82,18 +83,20 @@ double woodGrain(Vector w)
 
   	double rad = sqrt(w.GetX() * w.GetX() + w.GetZ() * w.GetZ());
 
-  	if (w.GetZ() == 0)
+  	if (w.GetZ() == 0) {
   	  	ang = Util::PI() / 2.;
-  	else
+	} else {
   	  	ang = arcTangent(w.GetX(), w.GetZ());
+	}
 
   	rad += 2. * sin(20. * ang + w.GetY() / 150.);
 
   	int grain = (int)fmod(rad, 60);		// return remainder
-  	if (grain < 30)
+  	if (grain < 30) {
   	  	return 1.4;
-  	else
+	} else {
   	  	return 0.25;
+	}
 }
 
 double arcTangent(double x, double z)
@@ -101,18 +104,20 @@ double arcTangent(double x, double z)
   	double arcTan;
 
   	if (z == 0)	{
-  	  	if (x > 0)
+  	  	if (x > 0) {
   	    	arcTan = Util::PI() / 2.;
-		else
+		} else {
   	    	arcTan = 3. * Util::PI() / 2.;
+		}
   	} else {
-  	  	if (z < 0)
+  	  	if (z < 0) {
   	  	  arcTan = atan(x / z) + Util::PI();
-		else {
-			if (x < 0)
+		} else {
+			if (x < 0) {
   	  	    	arcTan = atan(x / z) + 2. * Util::PI();
-			else
+			} else {
   	  	    	arcTan = atan(x / z);
+			}
 		}
   	}
 
@@ -222,8 +227,9 @@ void RenderPolygon(PolygonCell * currentPolygon)
 {
   	int y;
 
-  	for (y = 0; y <= DEV_MAX_Y_RES; y++)
+  	for (y = 0; y <= DEV_MAX_Y_RES; y++) {
 		edgeListAt[y] = NULL;
+	}
 
   	VertexList * vertex1 = currentPolygon->vertexListHead;
   	VertexList * vertex0 = vertex1;
@@ -237,9 +243,11 @@ void RenderPolygon(PolygonCell * currentPolygon)
 
   	AddEdgeToList(vertex1->vertex, vertex0->vertex);
 
-  	for (y = 0; y <= DEV_MAX_Y_RES; y++)
-		if (edgeListAt[y] != NULL)
+  	for (y = 0; y <= DEV_MAX_Y_RES; y++) {
+		if (edgeListAt[y] != NULL) {
 		  	RenderSpan(y, &edgeListAt[y], &edgeListAt[y]->next);
+		}
+	}
 }
 
 void RenderObject(ObjectCell * currentObject)
@@ -250,8 +258,9 @@ void RenderObject(ObjectCell * currentObject)
   	while (currentSurface != NULL) {
   	  	currentPolygon = currentSurface->polygonHead;
   	  	while (currentPolygon != NULL) {
-  	  	  	if (currentPolygon->polyVisible)
+  	  	  	if (currentPolygon->polyVisible) {
   	  	    	RenderPolygon(currentPolygon);
+			}
 			currentPolygon = currentPolygon->next;
 		}
   	  	currentSurface = currentSurface->next;
@@ -262,8 +271,10 @@ void initializeZBuffer()
 {
   	int x, y;
 
-  	for (x = 0; x <= DEV_MAX_X_RES; x++)
-  	  	for (y = 0; y <= DEV_MAX_Y_RES; y++)
+  	for (x = 0; x <= DEV_MAX_X_RES; x++) {
+  	  	for (y = 0; y <= DEV_MAX_Y_RES; y++) {
 		  	zBufferAt[x][y] = DEV_MAX_Z_RES;
+		}
+	}
 }
 
