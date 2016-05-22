@@ -1,8 +1,18 @@
 #include <iostream>
+#include <iomanip>
+#include <ostream>
 
 #include "Matrix.h"
 
-// constructeur
+/**********************************************************
+ * Matrix
+ * 
+ * constructeur
+ * 
+ * parameters IN : none
+ * 
+ * return value : Matrix *
+ *********************************************************/
 Matrix::Matrix() {
 	nbLignes = MATRIX_SIZE;
     nbColonnes = MATRIX_SIZE;
@@ -11,8 +21,17 @@ Matrix::Matrix() {
 	Zero();
 }
 
-// constructeur de recopie
-Matrix::Matrix(const Matrix & m) {
+/**********************************************************
+ * Matrix
+ * 
+ * constructeur de recopie
+ * 
+ * parameters IN :
+ *	const Matrix & m
+ * 
+ * return value : Matrix *
+ *********************************************************/
+Matrix::Matrix (const Matrix & m) {
     nbLignes = m.nbLignes;
     nbColonnes = m.nbColonnes;
 
@@ -23,14 +42,30 @@ Matrix::Matrix(const Matrix & m) {
 	}
 }
 
-// destructeur
+/**********************************************************
+ * ~Matrix
+ * 
+ * destructeur
+ * 
+ * parameters IN : none
+ * 
+ * return value : none
+ *********************************************************/
 Matrix::~Matrix() {
 }
 
-/**************************************
+/**********************************************************
+ * operator *
+ * 
  * operateur de multiplication
  * fonction amie (friend)
- *************************************/
+ * 
+ * parameters IN :
+ *	Matrix m1
+ *	Matrix m2
+ * 
+ * return value : Matrix
+ *********************************************************/
 Matrix operator * (Matrix m1, Matrix m2) {
 	Matrix m3;
   	m3.Zero();
@@ -45,7 +80,15 @@ Matrix operator * (Matrix m1, Matrix m2) {
 	return m3;
 }
 
-// initialise tous les éléments du tableau des valeurs à 0
+/**********************************************************
+ * Zero
+ * 
+ * initialise tous les éléments du tableau des valeurs à 0
+ * 
+ * parameters IN : none
+ * 
+ * return value : none
+ *********************************************************/
 void Matrix::Zero() {
   	for (int i = 0; i < nbLignes; i++) {
   	  	for (int j = 0; j < nbColonnes; j++) {
@@ -54,6 +97,13 @@ void Matrix::Zero() {
 	}
 }
 
+/**********************************************************
+ * Identity
+ * 
+ * parameters IN : none
+ * 
+ * return value : none
+ *********************************************************/
 void Matrix::Identity() {
   	Zero();
   	for (int diag = 0; diag < MATRIX_SIZE; diag++) {
@@ -61,10 +111,49 @@ void Matrix::Identity() {
 	}
 }
 
-double Matrix::GetValue(int row, int col) {
+/**********************************************************
+ * GetValue
+ * 
+ * parameters IN :
+ *	int row
+ *	int col
+ * 
+ * return value : double
+ *********************************************************/
+double Matrix::GetValue (int row, int col) {
 	return matrix[row][col];
 }
 
-void Matrix::SetValue(int row, int col, double value) {
+/**********************************************************
+ * SetValue
+ * 
+ * parameters IN :
+ *	int row
+ *	int col
+ *	double value
+ * 
+ * return value : none
+ *********************************************************/
+void Matrix::SetValue (int row, int col, double value) {
 	matrix[row][col] = value;
+}
+
+/**********************************************************
+ * operator <<
+ * 
+ * parameters IN :
+ *	ostream &os
+ *	const Matrix &m
+ * 
+ * return value : ostream &
+ *********************************************************/
+ostream& operator << (ostream & os, const Matrix & m) {
+	//?? os << setprecision (8) << setiosflags (ios::right | ios::showpoint);
+  	for (int i = 0; i < MATRIX_SIZE; i++) {
+  	  	for (int j = 0; j < MATRIX_SIZE; j++) {
+			os << setw(8) << m[i][j];
+		}
+		os << endl;
+	}
+	return os;
 }

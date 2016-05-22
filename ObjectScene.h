@@ -4,6 +4,7 @@
 #include <windows.h>
 #include <cstdio>
 #include <string>
+#include <vector>
 
 #include "ObjectCell.h"
 #include "MapRec.h"
@@ -15,36 +16,41 @@ using namespace std;
 
 const string DEFAULT_INI = "wireframe.ini";
 
+/**********************************************************
+ *
+ * classe ObjectScene
+ *
+ *********************************************************/
+
 class ObjectScene {
 private:
-	void MakeSurfaces(ObjectCell *);
-	void ReadPolygons(int, SurfaceCell *, ObjectCell *);
-	void ReadAPolygon(int, PolygonCell *, ObjectCell *);
-	int AddPolygonToPolygonList(PolygonCell *, PolygonList **);
-	void ReadVertices(ObjectCell *);
+    FILE * sceneFile;
+    FILE * objectFile;
+
+    void SetViewTransformation();
+	void CalculateScreenCoordinates();
+
+	void MakeSurfacesExt (ObjectCell *);
+	void ReadAPolygonExt (int, PolygonCell *, ObjectCell *);
+	int AddPolygonToPolygonListExt (PolygonCell *, PolygonList **);
+	void ReadVerticesExt (ObjectCell *);
 
 public:
     MapRec	     mapOffsets;
     Matrix       viewTransformation;
     ViewPointRec viewRefPoint;
-	ObjectCell * objectHead;
+	vector<ObjectCell *> objectHead;
     bool         drawVertexNormals;
     ZParamRec    zParams;
     bool         sceneChanged;
 
-  	int          noOfObjects;
-    FILE *       sceneFile;
-    FILE *       objectFile;
+	ObjectScene (HWND hWnd);
 
-	void WireFrameScene(HWND);
-	void CalculateScreenCoordinates();
-
-	ObjectScene(HWND hWnd);
     void SetViewVariables();
-    void SetViewTransformation();
+	void WireFrameScene (HWND);
 	void TransformScene();
-    bool LoadScene(HWND, char *, char *);
-    bool LoadObject(char *, char *);
+    bool LoadScene (HWND, char *, char *);
+    bool LoadObjectExt (char *, char *);
 };
 
 #endif   // OBJECT_SCENE_H

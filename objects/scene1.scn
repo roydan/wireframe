@@ -10,9 +10,15 @@ axes.obj
 0 0 0
 0 0 0
 2
-object.obj
-2 2 2
+cylinder.obj
+1 1 1
 0 0 0
 0 0 0
+0 0 0
+3
+teapot.obj
+64 64 64
+0  0  0
+0  0  0
 0 0 0
 0

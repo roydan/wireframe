@@ -1,81 +1,140 @@
 #include <windows.h>
 #include <cmath>
+#include <iostream>
 
 #include "ObjectCell.h"
 #include "ObjectScene.h"
 #include "graphics3d.h"
 #include "Util.h"
 
-ObjectCell::ObjectCell() {
-    this->pObjectScene = NULL;
+/**********************************************************
+ * ObjectCell
+ * 
+ * constructeur
+ * 
+ * objet appartient à une scène
+ * 
+ * parameters IN:
+ * 	ObjectScene * ptrScene
+ * 
+ * return value : ObjectCell *
+ *********************************************************/
+ObjectCell::ObjectCell (ObjectScene * ptrScene) {
+    this->ptrScene = ptrScene;
+
+  	devColor = DEV_COLOR (0, 0, 0);
 }
 
-// objet appartient à une scène
-ObjectCell::ObjectCell(ObjectScene * pObjectScene) {
-    this->pObjectScene = pObjectScene;
-}
-
+/**********************************************************
+ * CalculateEyeCoordinates
+ * 
+ * parameters IN : none
+ * 
+ * return value : none
+ *********************************************************/
 void ObjectCell::CalculateEyeCoordinates() {
-  	VertexCell * currentVertex = vertexHead;
-  	while (currentVertex != NULL) {
-  	  	currentVertex->eyePos.VectorMatrix(currentVertex->worldPos, pObjectScene->viewTransformation);
+  	VertexCell * currentVertex;
+	for (vector<VertexCell *>::iterator it = vertexHead.begin(); it != vertexHead.end(); ++it) {
+		currentVertex = *it;
+  	  	currentVertex->eyePos.VectorMatrix (currentVertex->worldPos, ptrScene->viewTransformation);
 
-  	  	if (currentVertex->eyePos.GetZ() < pObjectScene->zParams.zMin) {
-  	  	  	pObjectScene->zParams.zMin = currentVertex->eyePos.GetZ();
-		} else if (currentVertex->eyePos.GetZ() > pObjectScene->zParams.zMax) {
-  	  	  	pObjectScene->zParams.zMax = currentVertex->eyePos.GetZ();
+  	  	if (currentVertex->eyePos.GetZ() < ptrScene->zParams.GetZMin()) {
+  	  	  	ptrScene->zParams.SetZMin (currentVertex->eyePos.GetZ());
+		} else if (currentVertex->eyePos.GetZ() > ptrScene->zParams.GetZMax()) {
+  	  	  	ptrScene->zParams.SetZMax (currentVertex->eyePos.GetZ());
 		}
-
-  	  	currentVertex = currentVertex->next;
     }
 }
 
+/**********************************************************
+ * RemoveHiddenSurfaces
+ * 
+ * parameters IN : none
+ * 
+ * return value : none
+ *********************************************************/
 void ObjectCell::RemoveHiddenSurfaces() {
-  	SurfaceCell * currentSurface = surfaceHead;
-  	while (currentSurface != NULL) {
-  	  	RemovePolygonIfHidden(currentSurface->polygonHead);
-  	  	currentSurface = currentSurface->next;
+  	SurfaceCell * currentSurface;
+    for (vector<SurfaceCell *>::iterator it = surfaceHead.begin(); it != surfaceHead.end(); ++it) {
+        currentSurface = *it;
+  	  	RemovePolygonIfHidden (currentSurface);
     }
 }
 
-void ObjectCell::RemovePolygonIfHidden(PolygonCell * currentPolygon) {
+/**********************************************************
+ * RemovePolygonIfHidden
+ * 
+ * private
+ * 
+ * parameters IN :
+ *	SurfaceCell * currentSurface
+ * 
+ * return value : none
+ *********************************************************/
+void ObjectCell::RemovePolygonIfHidden (SurfaceCell * currentSurface) {
   	Vector viewDirection;
 
-  	while (currentPolygon != NULL) {
-		VertexCell * currentVertexHead = currentPolygon->vertexListHead->vertex;
-  	  	viewDirection.SetX( pObjectScene->viewRefPoint.GetXView() - currentVertexHead->worldPos.GetX());
-  	  	viewDirection.SetY( pObjectScene->viewRefPoint.GetYView() - currentVertexHead->worldPos.GetY());
-  	  	viewDirection.SetZ( pObjectScene->viewRefPoint.GetZView() - currentVertexHead->worldPos.GetZ());
+    PolygonCell * currentPolygon;
+    for (vector<PolygonCell *>::iterator it = currentSurface->polygonHead.begin(); it != currentSurface->polygonHead.end(); ++it) {
+        currentPolygon = *it;
 
-  	  	currentPolygon->polyVisible = (viewDirection.DotProduct(currentPolygon->polyNormal) > 0);
-  	  	currentPolygon = currentPolygon->next;
+		VertexCell * currentVertexHead = currentPolygon->vertexListHead->vertex;
+  	  	viewDirection.SetX (ptrScene->viewRefPoint.GetXView() - currentVertexHead->worldPos.GetX());
+  	  	viewDirection.SetY (ptrScene->viewRefPoint.GetYView() - currentVertexHead->worldPos.GetY());
+  	  	viewDirection.SetZ (ptrScene->viewRefPoint.GetZView() - currentVertexHead->worldPos.GetZ());
+
+  	  	currentPolygon->polyVisible = (viewDirection.DotProduct (currentPolygon->polyNormal) > 0);
     }
 }
 
+/**********************************************************
+ * CalculateNormals
+ * 
+ * parameters IN : none
+ * 
+ * return value : none
+ *********************************************************/
 void ObjectCell::CalculateNormals() {
   	CalculatePolygonNormals();
   	CalculateVertexNormals();
 }
 
+/**********************************************************
+ * CalculatePolygonNormals
+ * 
+ * private
+ * 
+ * parameters IN : none
+ * 
+ * return value : none
+ *********************************************************/
 void ObjectCell::CalculatePolygonNormals() {
-  	PolygonCell * currentPolygon;
+  	SurfaceCell * currentSurface;
+    for (vector<SurfaceCell *>::iterator it_surface = surfaceHead.begin(); it_surface != surfaceHead.end(); ++it_surface) {
+        currentSurface = *it_surface;
 
-  	SurfaceCell * currentSurface = surfaceHead;
-  	while (currentSurface != NULL) {
-  	  	currentPolygon = currentSurface->polygonHead;
-  	  	while (currentPolygon != NULL) {
-  	  	  	CalculateAPolygonNormal(currentPolygon);
-  	  	  	currentPolygon = currentPolygon->next;
+  		PolygonCell * currentPolygon;
+        for (vector<PolygonCell *>::iterator it_polygon = currentSurface->polygonHead.begin(); it_polygon != currentSurface->polygonHead.end(); ++it_polygon) {
+            currentPolygon = *it_polygon;
+  	  	  	CalculateAPolygonNormal (currentPolygon);
   	  	}
-  	  	currentSurface = currentSurface->next;
     }
 }
 
-void ObjectCell::CalculateAPolygonNormal(PolygonCell * currentPolygon) {
-  	VertexList * vertexList;
+/**********************************************************
+ * CalculateAPolygonNormal
+ * 
+ * private
+ * 
+ * parameters IN :
+ *	PolygonCell * currentPolygon
+ * 
+ * return value : none
+ *********************************************************/
+void ObjectCell::CalculateAPolygonNormal (PolygonCell * currentPolygon) {
   	Vector w1, w2, w3;
 
-  	vertexList = currentPolygon->vertexListHead;
+  	VertexList * vertexList = currentPolygon->vertexListHead;
 
   	w1 = vertexList->vertex->worldPos;
   	vertexList = vertexList->next;
@@ -83,134 +142,199 @@ void ObjectCell::CalculateAPolygonNormal(PolygonCell * currentPolygon) {
   	vertexList = vertexList->next;
   	w3 = vertexList->vertex->worldPos;
 
-  	currentPolygon->polyNormal.SetX( ((w1.GetY() - w2.GetY()) * (w2.GetZ() + w1.GetZ())) + ((w2.GetY() - w3.GetY()) * (w3.GetZ() + w2.GetZ())) + ((w3.GetY() - w1.GetY()) * (w1.GetZ() + w3.GetZ())));
-  	currentPolygon->polyNormal.SetY( ((w1.GetZ() - w2.GetZ()) * (w2.GetX() + w1.GetX())) + ((w2.GetZ() - w3.GetZ()) * (w3.GetX() + w2.GetX())) + ((w3.GetZ() - w1.GetZ()) * (w1.GetX() + w3.GetX())));
-  	currentPolygon->polyNormal.SetZ( ((w1.GetX() - w2.GetX()) * (w2.GetY() + w1.GetY())) + ((w2.GetX() - w3.GetX()) * (w3.GetY() + w2.GetY())) + ((w3.GetX() - w1.GetX()) * (w1.GetY() + w3.GetY())));
+  	currentPolygon->polyNormal.SetX (((w1.GetY() - w2.GetY()) * (w2.GetZ() + w1.GetZ())) + ((w2.GetY() - w3.GetY()) * (w3.GetZ() + w2.GetZ())) + ((w3.GetY() - w1.GetY()) * (w1.GetZ() + w3.GetZ())));
+  	currentPolygon->polyNormal.SetY (((w1.GetZ() - w2.GetZ()) * (w2.GetX() + w1.GetX())) + ((w2.GetZ() - w3.GetZ()) * (w3.GetX() + w2.GetX())) + ((w3.GetZ() - w1.GetZ()) * (w1.GetX() + w3.GetX())));
+  	currentPolygon->polyNormal.SetZ (((w1.GetX() - w2.GetX()) * (w2.GetY() + w1.GetY())) + ((w2.GetX() - w3.GetX()) * (w3.GetY() + w2.GetY())) + ((w3.GetX() - w1.GetX()) * (w1.GetY() + w3.GetY())));
 
   	currentPolygon->polyNormal.Normalize();
 }
 
-void ObjectCell::CalculateVertexNormals()	{
-  	VertexCell * currentVertex = vertexHead;
-  	while (currentVertex != NULL) {
-  	  CalculateAVertexNormal(currentVertex);
-  	  currentVertex = currentVertex->next;
+/**********************************************************
+ * CalculateVertexNormals
+ * 
+ * private
+ * 
+ * parameters IN : none
+ * 
+ * return value : none
+ *********************************************************/
+void ObjectCell::CalculateVertexNormals() {
+  	VertexCell * currentVertex;
+	for (vector<VertexCell *>::iterator it = vertexHead.begin(); it != vertexHead.end(); ++it) {
+		currentVertex = *it;
+  		CalculateAVertexNormal (currentVertex);
     }
 }
 
-void ObjectCell::CalculateAVertexNormal(VertexCell * currentVertex) {
-  	PolygonList * polyList;
+/**********************************************************
+ * CalculateAVertexNormal
+ * 
+ * private
+ * 
+ * parameters IN :
+ *	VertexCell * currentVertex
+ * 
+ * return value : none
+ *********************************************************/
+void ObjectCell::CalculateAVertexNormal (VertexCell * currentVertex) {
   	Vector sumVector(0, 0, 0);
-  	int    polyCount;
+  	int    polyCount = 0;
 
-  	polyCount = 0;
-  	polyList = currentVertex->polyListHead;
+  	PolygonList * polyList = currentVertex->polyListHead;
   	while (polyList != NULL) {
   	  	polyCount++;
-  	  	sumVector.SetX( sumVector.GetX() + polyList->poly->polyNormal.GetX());
-  	  	sumVector.SetY( sumVector.GetY() + polyList->poly->polyNormal.GetY());
-  	  	sumVector.SetZ( sumVector.GetZ() + polyList->poly->polyNormal.GetZ());
+  	  	sumVector.SetX (sumVector.GetX() + polyList->poly->polyNormal.GetX());
+  	  	sumVector.SetY (sumVector.GetY() + polyList->poly->polyNormal.GetY());
+  	  	sumVector.SetZ (sumVector.GetZ() + polyList->poly->polyNormal.GetZ());
   	  	polyList = polyList->next;
   	}
 
   	if (polyCount > 0) {
-  	  	currentVertex->vertexNormal.SetX( sumVector.GetX() / polyCount);
-  	  	currentVertex->vertexNormal.SetY( sumVector.GetY() / polyCount);
-  	  	currentVertex->vertexNormal.SetZ( sumVector.GetZ() / polyCount);
+  	  	currentVertex->vertexNormal.SetX (sumVector.GetX() / polyCount);
+  	  	currentVertex->vertexNormal.SetY (sumVector.GetY() / polyCount);
+  	  	currentVertex->vertexNormal.SetZ (sumVector.GetZ() / polyCount);
   	  	currentVertex->vertexNormal.Normalize();
   	} else {
-  	  	currentVertex->vertexNormal.SetX(1);
-  	  	currentVertex->vertexNormal.SetY(1);
-  	  	currentVertex->vertexNormal.SetZ(1);
+  	  	currentVertex->vertexNormal = Vector (0, 0, 0);		//?? was 1,1,1
     }
 }
 
+/**********************************************************
+ * TransformToWorldCoordinates
+ * 
+ * parameters IN : none
+ * 
+ * return value : none
+ *********************************************************/
 void ObjectCell::TransformToWorldCoordinates() {
-  	VertexCell * currentVertex = vertexHead;
-  	while (currentVertex != NULL) {
-  	  	currentVertex->worldPos.VectorMatrix(currentVertex->localPos, transformation);
-  	  	currentVertex = currentVertex->next;
+  	VertexCell * currentVertex;
+	for (vector<VertexCell *>::iterator it = vertexHead.begin(); it != vertexHead.end(); ++it) {
+		currentVertex = *it;
+  	  	currentVertex->worldPos.VectorMatrix (currentVertex->localPos, transformation);
     }
 }
 
-void ObjectCell::GetTransformation(int transType, Vector transVector) {
+/**********************************************************
+ * GetTransformation
+ * 
+ * parameters IN :
+ *	int transType
+ *	Vector transVector
+ * 
+ * return value : none
+ *********************************************************/
+void ObjectCell::GetTransformation (int transType, Vector transVector) {
   	Matrix transMatrix;
   	transMatrix.Identity();
 
   	switch (transType) {
   	  	case ROTATION:
+		{
   	    	// angles of rotation about x,y,z axes
   	    	// angle positif -> rotation anti-horaire
-  	    	transMatrix = GetRotationMatrix(transVector);
+  	    	transMatrix = GetRotationMatrix (transVector);
   	    	transformation = transformation * transMatrix;
-  	    	break;
+		}
+    	break;
 
   	  	case SCALING:
+		{
   	    	// scaling factors for x,y,z
-  	    	transMatrix = GetScalingMatrix(transVector);
+  	    	transMatrix = GetScalingMatrix (transVector);
   	    	transformation = transformation * transMatrix;
-  	    	break;
+		}
+  	    break;
 
   	  	case TRANSLATION:
+		{
   	    	// translation factors for x,y,z
-  	    	transMatrix = GetTranslationMatrix(transVector);
+  	    	transMatrix = GetTranslationMatrix (transVector);
   	    	transformation = transformation * transMatrix;
-  	    	break;
+		}
+  	    break;
 
   	  	default:
+		{
   	    	transformation.Identity();
+		}
 	}
 }
 
-Matrix ObjectCell::GetTranslationMatrix(Vector tv) {
+/**********************************************************
+ * PRIVATE
+ *********************************************************/
+
+/**********************************************************
+ * GetTranslationMatrix
+ * 
+ * parameters IN :
+ *	Vector tv
+ * 
+ * return value : Matrix
+ *********************************************************/
+Matrix ObjectCell::GetTranslationMatrix (Vector tv) {
 	Matrix tm;
   	tm.Identity();
-  	tm.SetValue(3, 0, tv.GetX());
-  	tm.SetValue(3, 1, tv.GetY());
-  	tm.SetValue(3, 2, tv.GetZ());
+  	tm[3][0] = tv.GetX();
+  	tm[3][1] = tv.GetY();
+  	tm[3][2] = tv.GetZ();
 	return tm;
 }
 
-Matrix ObjectCell::GetScalingMatrix(Vector sv) {
+/**********************************************************
+ * GetScalingMatrix
+ * 
+ * parameters IN :
+ *	Vector sv
+ * 
+ * return value : Matrix
+ *********************************************************/
+Matrix ObjectCell::GetScalingMatrix (Vector sv) {
 	Matrix sm;
   	sm.Identity();
-  	sm.SetValue(0, 0, sv.GetX());
-  	sm.SetValue(1, 1, sv.GetY());
-  	sm.SetValue(2, 2, sv.GetZ());
+  	sm[0][0] = sv.GetX();
+  	sm[1][1] = sv.GetY();
+  	sm[2][2] = sv.GetZ();
 	return sm;
 }
 
-//*******************************************************************
-// rotation en degre
-// angle positif -> rotation anti-horaire
-//*******************************************************************
-Matrix ObjectCell::GetRotationMatrix(Vector rv) {
+/**********************************************************
+ * GetRotationMatrix
+ * 
+ * rotation en degre
+ * angle positif -> rotation anti-horaire
+ * 
+ * parameters IN :
+ *	Vector rv
+ * 
+ * return value : Matrix
+ *********************************************************/
+Matrix ObjectCell::GetRotationMatrix (Vector rv) {
 	Matrix rm;
   	Matrix xRot, yRot, zRot;
-  	Matrix temp;
 
 	xRot.Identity();
   	yRot.Identity();
   	zRot.Identity();
 
-  	rv.SetX( InRadians(rv.GetX()));
-  	rv.SetY( InRadians(rv.GetY()));
-  	rv.SetZ( InRadians(rv.GetZ()));
+  	rv.SetX (Util::InRadians (rv.GetX()));
+  	rv.SetY (Util::InRadians (rv.GetY()));
+  	rv.SetZ (Util::InRadians (rv.GetZ()));
 
-  	xRot.SetValue(1, 1, cos(rv.GetX()));
-  	xRot.SetValue(1, 2, sin(rv.GetX()));
-  	xRot.SetValue(2, 1, -sin(rv.GetX()));
-  	xRot.SetValue(2, 2, cos(rv.GetX()));
+  	xRot[1][1] =  cos (rv.GetX());
+  	xRot[1][2] =  sin (rv.GetX());
+  	xRot[2][1] = -sin (rv.GetX());
+  	xRot[2][2] =  cos (rv.GetX());
 
-  	yRot.SetValue(0, 0, cos(rv.GetY()));
-  	yRot.SetValue(0, 2, -sin(rv.GetY()));
-  	yRot.SetValue(2, 0, sin(rv.GetY()));
-  	yRot.SetValue(2, 2, cos(rv.GetY()));
+  	yRot[0][0] =  cos (rv.GetY());
+  	yRot[0][2] = -sin (rv.GetY());
+  	yRot[2][0] =  sin (rv.GetY());
+  	yRot[2][2] =  cos (rv.GetY());
 
-  	zRot.SetValue(0, 0, cos(rv.GetZ()));
-  	zRot.SetValue(0, 1, sin(rv.GetZ()));
-  	zRot.SetValue(1, 0, -sin(rv.GetZ()));
-  	zRot.SetValue(1, 1, cos(rv.GetZ()));
+  	zRot[0][0] =  cos (rv.GetZ());
+  	zRot[0][1] =  sin (rv.GetZ());
+  	zRot[1][0] = -sin (rv.GetZ());
+  	zRot[1][1] =  cos (rv.GetZ());
 
   	rm = zRot * yRot;
   	rm = xRot * rm;

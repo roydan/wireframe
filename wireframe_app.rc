@@ -33,15 +33,16 @@ WIREFRAME MENU DISCARDABLE
 BEGIN
     POPUP "&Fichier"
     BEGIN
-        MENUITEM "&Nouveau...",                 IDM_NEW
+        MENUITEM "&Clear All",                  IDM_CLEAR
         MENUITEM "&Ouvrir...",                  IDM_OPEN
+        MENUITEM "Ouvrir &Scene...",            IDM_OPEN_SCENE
         MENUITEM SEPARATOR
         MENUITEM "&Quitter",                    IDM_EXIT
     END
     POPUP "WireFrame"
     BEGIN
         MENUITEM "&WireFrame Scene",            ID_WIREFRAME_WIREFRAMESCENE
-        MENUITEM "Render Scene",                IDM_RENDER_SCENE
+        MENUITEM "&Render Scene",               IDM_RENDER_SCENE
     END
     POPUP "&Transformation"
     BEGIN
@@ -73,9 +74,9 @@ ABOUT_BOX DIALOG DISCARDABLE  20, 20, 160, 80
 STYLE DS_MODALFRAME | WS_POPUP
 FONT 8, "MS Sans Serif"
 BEGIN
-    CTEXT           "WireFrame v110",IDC_STATIC,0,12,159,9
+    CTEXT           "WireFrame v120",IDC_STATIC,0,12,159,9
     PUSHBUTTON      "OK",IDOK,64,60,32,14,WS_GROUP | NOT WS_TABSTOP
-    CTEXT           "Daniel Roy, 23-05-2012",IDC_STATIC,0,28,159,8
+    CTEXT           "Daniel Roy, 31-07-2013",IDC_STATIC,0,28,159,8
 END
 
 POINT_VUE_DLG DIALOG DISCARDABLE  18, 19, 273, 177

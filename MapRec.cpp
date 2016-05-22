@@ -1,14 +1,31 @@
 #include "MapRec.h"
 
-MapRec::MapRec(int xMid, int yMid) {
+/**********************************************************
+ * MapRec
+ * 
+ * constructeur
+ * 
+ * parameters IN:
+ * 	int xMid	default = 0
+ *	int yMid	default = 0
+ * 
+ * return value : MapRec *
+ *********************************************************/
+MapRec::MapRec (int xMid, int yMid) {
   	this->xMid = xMid;
   	this->yMid = yMid;
 }
 
-int MapRec::GetXMid() { return xMid; }
-
-int MapRec::GetYMid() { return yMid; }
-
-void MapRec::SetXMid(int value) { xMid = value; }
-
-void MapRec::SetYMid(int value) { yMid = value; }
+/**********************************************************
+ * operator =
+ * 
+ * parameters IN :
+ *	const MapRec& another
+ * 
+ * return value : none
+ *********************************************************/
+void MapRec::operator = (const MapRec& another)
+{
+  	this->xMid = another.xMid;
+  	this->yMid = another.yMid;
+}
