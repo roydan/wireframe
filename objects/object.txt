@@ -1,0 +1,37 @@
+*************************************************
+* object file
+*************************************************
+object.type
+no_vertices
+vertex.id vertex.x vertex.y vertex.z
+...
+no_surfaces
+surface.id no_polygons
+polygon.id no_vertices_in_polygon vertex.id
+*************************************************
+* scene file
+*************************************************
+						viewing information
+ 1						  1 = perspective , 0 = parallel
+-7000					  view distance			ViewPointRec.viewPlaneDist
+ 10000					  perspective distance
+-0.7	-0.4	-0.3	  view plane normal		ViewPointRec.rho .theta .phi
+ 0.0	0.0		1.0		  view up vector
+ 0						  draw vertex normals	bool drawVertexNormals
+ 4						no. of objects			int noOfObjects
+ 1						object id
+ cube.obj				object data filename
+						object transformations	Matrix transformation
+ 0.4 0.4 0.4		  	  scale vector
+ 0.0 0.0 0.0		  	  rotate vector
+ 0.5 1.7 -0.6		  	  translate vector
+*************************************************
+view distance
+rho
+theta
+phi
+draw vertex normals
+no. of objects
+object data filename
+object transformations / scale / rotate / translate
+*************************************************
