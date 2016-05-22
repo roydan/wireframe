@@ -49,7 +49,7 @@ ObjectScene::ObjectScene (HWND hWnd) {
 
     sceneChanged = false;
 
-  	objectHead.clear();			//?? objectHead = NULL;
+  	objectHead.clear();
 
     objectFile = NULL;
     sceneFile = NULL;
@@ -284,7 +284,6 @@ void ObjectScene::CalculateScreenCoordinates() {
   	  	  	  	  	  	  	  	vertexList = vertexList->next;
   	  	  	  	  	  	  	}
   	  	  	  	  	  	}
-  	  	  	  	  	  	currentPolygon = currentPolygon->next;
   	  	  	  	  	}
   	  	  	  	}
             }
@@ -363,16 +362,12 @@ bool ObjectScene::LoadScene (HWND hWnd, char * fileName, char * sceneName) {
 
   	SetViewVariables();
 
-  	//?? fscanf (sceneFile, "%d\n", &nbObjects);
-    //?? for (int i = 0; i < nbObjects; i++) {
     int i = 0;
 
     fscanf (sceneFile, "%d\n", &objectId);
     cout << "objectId= " << objectId << endl;
 		
   	while (objectId != 0) {
-  	    //?? fscanf (sceneFile, "%d\n", &objectId);
-        
   	    fscanf (sceneFile, "%s\n", &fileNameObject);
 
   	    fscanf (sceneFile, "%lf %lf %lf\n", &tempX, &tempY, &tempZ);
@@ -388,9 +383,7 @@ bool ObjectScene::LoadScene (HWND hWnd, char * fileName, char * sceneName) {
   	    fscanf (sceneFile, "%d\n", &(aColor_scn.r));
   	    fscanf (sceneFile, "%d\n", &(aColor_scn.g));
   	    fscanf (sceneFile, "%d\n", &(aColor_scn.b));
-  	    //?? cout << "aColor_scn.r= " << aColor_scn.r << endl;
-  	    //?? cout << "aColor_scn.g= " << aColor_scn.g << endl;
-  	    //?? cout << "aColor_scn.b= " << aColor_scn.b << endl;
+  	    //?? cout << "aColor_scn.r,g,b = " << aColor_scn.r << " , " << aColor_scn.g << " , " << aColor_scn.b << endl;
 
         if (strstr(fileNameObject, ".obj") != NULL) {
             // load an object
@@ -402,14 +395,10 @@ bool ObjectScene::LoadScene (HWND hWnd, char * fileName, char * sceneName) {
                currentObject->GetTransformation (ROTATION, rotate);
                currentObject->GetTransformation (TRANSLATION, translate);
 
-              //?? cout << "currentObject->devColor (scn)= " << currentObject->devColor.r << endl;
-              //?? cout << "currentObject->devColor (scn)= " << currentObject->devColor.g << endl;
-              //?? cout << "currentObject->devColor (scn)= " << currentObject->devColor.b << endl;
+              //?? cout << "currentObject->devColor.r,g,b (scn) = " << currentObject->devColor.r << " , " << currentObject->devColor.g << " , " << currentObject->devColor.b << endl;
                if (!((aColor_scn.r == 0) && (aColor_scn.g == 0) && (aColor_scn.b == 0))) {
   	              currentObject->devColor = aColor_scn;
-  	              cout << "currentObject->devColor (scn)= " << currentObject->devColor.r << endl;
-  	              cout << "currentObject->devColor (scn)= " << currentObject->devColor.g << endl;
-  	              cout << "currentObject->devColor (scn)= " << currentObject->devColor.b << endl;
+  	              cout << "currentObject->devColor (scn)= " << currentObject->devColor.r << " , " << currentObject->devColor.g << " , " << currentObject->devColor.b << endl;
                }
 
   	  	    	sceneChanged = true;
@@ -464,10 +453,8 @@ bool ObjectScene::LoadObjectExt (char * fileName, char * objectName) {
    // read currentObject type
   	fscanf (objectFile, "%d\n", &(currentObject->type));
 
-  	//?? fscanf (objectFile, "%d\n", &(currentObject->noVertices));
   	ReadVerticesExt (currentObject);
 
-  	//?? fscanf (objectFile, "%d\n", &(currentObject->noSurfaces));
   	MakeSurfacesExt (currentObject);
 
    // read color
@@ -506,8 +493,6 @@ void ObjectScene::MakeSurfacesExt (ObjectCell * currentObject)
     SurfaceCell * currentSurface;
   	int surfaceId, currId = 0;
 	
-	currentObject->noSurfaces = 0;		//??
-
   	fscanf (objectFile, "%d", &surfaceId);
     //?? cout << "MakeSurfacesExt: surfaceId= " << surfaceId << endl;
 		
@@ -515,19 +500,9 @@ void ObjectScene::MakeSurfacesExt (ObjectCell * currentObject)
 		if (currId != surfaceId) {
             // nouvelle surface
 			currId = surfaceId;
-
-			currentObject->noSurfaces++;
-			//?? cout << "currentObject->noSurfaces= " << currentObject->noSurfaces << endl;
-
  			currentSurface = new SurfaceCell;
-
-			currentSurface->noPolygons = 0;		//??
-
  	  		currentObject->surfaceHead.push_back (currentSurface);              // add to end of vector
 		}
-
-		currentSurface->noPolygons++;
-		//?? cout << "currentSurface->noPolygons= " << currentSurface->noPolygons << endl;
 
   		PolygonCell * currentPolygon = new PolygonCell;
 	  	currentSurface->polygonHead.push_back (currentPolygon);              // add to end of vector
@@ -578,19 +553,18 @@ void ObjectScene::ReadAPolygonExt (int surfaceId, PolygonCell * currentPolygon, 
   	  	  	currentObject->surfaceAt[currentVertex - 1] = surfaceId;
 		} else {
   	  	  	if (currentObject->surfaceAt[currentVertex - 1] != surfaceId) {
-  	  	  	  	(currentObject->noVertices)++;
-				
+
 				currentObject->surfaceAt[currentVertex - 1] = surfaceId;
 
   	  	  	  	tempVertex = new VertexCell;
 				//?? cout << "tempVertex= " << tempVertex->localPos.GetX() << " " << tempVertex->localPos.GetY() << " " << tempVertex->localPos.GetZ() << endl;
-  	  	  	  	*tempVertex = *currentObject->vertexAt[currentVertex - 1];
+  	  	  	  	*tempVertex = *(currentObject->vertexAt[currentVertex - 1]);
 				//?? cout << "tempVertex= " << tempVertex->localPos.GetX() << " " << tempVertex->localPos.GetY() << " " << tempVertex->localPos.GetZ() << endl;
 
   	  	  	  	tempVertex->polyListHead = NULL;
 
   	  			currentObject->vertexHead.push_back (tempVertex);              // add to end of vector
-                //?? cout << "ReadAPolygon: add to vertexHead -> vertexAt[ currentVertex= " << currentVertex << " - 1 ]" << endl;
+                //?? cout << "ReadAPolygon: add to vertexHead -> vertexAt[ (currentVertex= " << currentVertex << ") - 1 ]" << endl;
   	  	  	}
   	  	}
   	  	vertexList->vertex = currentObject->vertexAt[currentVertex - 1];
@@ -635,17 +609,10 @@ void ObjectScene::ReadVerticesExt (ObjectCell * currentObject) {
   	int vertexId;
   	double temp;
 
-	currentObject->noVertices = 0;		//??
-
   	fscanf (objectFile, "%d", &vertexId);
     //?? cout << "ReadVerticesExt: vertexId= " << vertexId << endl;
 		
   	while (vertexId != 0) {
-		currentObject->noVertices++;
-		//?? cout << "currentObject->noVertices= " << currentObject->noVertices << endl;
-
-  	      currentObject->surfaceAt [currentObject->noVertices - 1] = 0;
-		
 	      VertexCell * currentVertex = new VertexCell;
 	      
   	  	fscanf (objectFile, " %lf", &temp);       // %lf pour double
@@ -662,15 +629,14 @@ void ObjectScene::ReadVerticesExt (ObjectCell * currentObject) {
 		currentObject->vertexAt.push_back (currentVertex);
         //?? cout << "ReadVerticesExt: add to vertexAt[ " << currentObject->vertexAt.size() - 1 << " ]" << endl;
 
-  	    fscanf (objectFile, "%d", &vertexId);
-        //?? cout << "ReadVerticesExt: vertexId= " << vertexId << endl;
-  	}
-
-    VertexCell * currentVertex;
-	for (vector<VertexCell *>::iterator it = currentObject->vertexAt.begin(); it != currentObject->vertexAt.end(); ++it) {
-		currentVertex = *it;
 		// add point to vertexHead
 		currentObject->vertexHead.push_back (currentVertex);
-    }
-    //?? cout << "ReadVerticesExt: add to vertexHead -> vertexAt[]" << endl;
+    	//?? cout << "ReadVerticesExt: add to vertexHead -> vertexAt[] = " << currentVertex << endl;
+
+  	      currentObject->surfaceAt [currentObject->vertexHead.size() - 1] = 0;
+  	      //?? currentObject->surfaceAt [currentObject->vertexHead.size() - 1] = 0;
+		
+  	    fscanf (objectFile, "%d", &vertexId);
+        //?? cout << "ReadVerticesExt: vertexId= " << vertexId << endl;
+ 	}
 }

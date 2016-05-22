@@ -30,7 +30,6 @@ public:
   	Vector vertexNormal;
   	ScreenRec screenPos;
   	PolygonList * polyListHead;
-  	VertexCell * next;		// pointeur sur le point suivant
 };
 
 /**********************************************************
@@ -58,7 +57,6 @@ public:
   	VertexList * vertexListHead;
   	Vector polyNormal;
   	bool   polyVisible;
-  	PolygonCell * next;
 };
 
 /**********************************************************
@@ -83,7 +81,6 @@ public:
 // surface
 class SurfaceCell {
 public:
-  	int noPolygons;
   	vector<PolygonCell *> polygonHead;
 };
 
@@ -102,15 +99,13 @@ public:
   	int    		type;		//++ added
   	string 		name;
   	int    		idNo;
-  	int    		noVertices;
-  	int    		noSurfaces;
   	vector<SurfaceCell *> surfaceHead;
   	vector<VertexCell *>  vertexHead;
   	Matrix      		  transformation;
     vector<VertexCell *>  vertexAt;
     int         surfaceAt[MAX_NO_OF_VERTICES];
 
-  	DEV_COLOR devColor;
+  	DEV_COLOR 	devColor;
   	
   	ObjectCell (ObjectScene * ptrScene);
 
