@@ -10,7 +10,7 @@
 #include <windows.h>
 #include <fcntl.h>
 
-using namespace std;
+#include "guicon.h"
 
 // maximum mumber of lines the output console should have
 static const WORD MAX_CONSOLE_LINES = 500;
@@ -38,21 +38,21 @@ void RedirectIOToConsole()
 	SetConsoleScreenBufferSize (GetStdHandle (STD_OUTPUT_HANDLE), coninfo.dwSize);
 
 	// redirect unbuffered STDOUT to the console
-	lStdHandle = (long)GetStdHandle (STD_OUTPUT_HANDLE);
+	lStdHandle = (intptr_t)GetStdHandle (STD_OUTPUT_HANDLE);		//?? FROM long TO intptr_t
 	hConHandle = _open_osfhandle (lStdHandle, _O_TEXT);
 	fp = _fdopen (hConHandle, "w");
 	*stdout = *fp;
 	setvbuf (stdout, NULL, _IONBF, 0);
 
 	// redirect unbuffered STDIN to the console
-	lStdHandle = (long)GetStdHandle (STD_INPUT_HANDLE);
+	lStdHandle = (intptr_t)GetStdHandle (STD_INPUT_HANDLE);		//?? FROM long TO intptr_t
 	hConHandle = _open_osfhandle (lStdHandle, _O_TEXT);
 	fp = _fdopen (hConHandle, "r");
 	*stdin = *fp;
 	setvbuf (stdin, NULL, _IONBF, 0);
 
 	// redirect unbuffered STDERR to the console
-	lStdHandle = (long)GetStdHandle (STD_ERROR_HANDLE);
+	lStdHandle = (intptr_t)GetStdHandle (STD_ERROR_HANDLE);		//?? FROM long TO intptr_t
 	hConHandle = _open_osfhandle (lStdHandle, _O_TEXT);
 	fp = _fdopen (hConHandle, "w");
 	*stderr = *fp;

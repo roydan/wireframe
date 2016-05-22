@@ -51,10 +51,10 @@
 // prototypes
 
 int WireframeFunction (int, HWND, WPARAM, LPARAM);
-BOOL CALLBACK TransformationDlgProc (HWND, UINT, WPARAM, LPARAM);
+INT_PTR CALLBACK TransformationDlgProc (HWND, UINT, WPARAM, LPARAM);		//?? FROM BOOL TO INT_PTR
 void InitTransformationDlg(HWND, Vector *, Vector *, Vector *);
-BOOL CALLBACK ViewRefPointDlgProc (HWND, UINT, WPARAM, LPARAM);
+INT_PTR CALLBACK ViewRefPointDlgProc (HWND, UINT, WPARAM, LPARAM);			//?? FROM BOOL TO INT_PTR
 void InitViewRefPointDlg(HWND, ViewPointRec *);
-BOOL CALLBACK AboutBoxDlgProc (HWND, UINT, WPARAM, LPARAM);
+INT_PTR CALLBACK AboutBoxDlgProc (HWND, UINT, WPARAM, LPARAM);				//?? FROM BOOL TO INT_PTR
 
 #endif   // WIREFRAME_H

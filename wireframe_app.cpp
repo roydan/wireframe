@@ -9,8 +9,6 @@
 #include "popfile.h"
 #include "guicon.h"
 
-using namespace std;
-
 extern ObjectScene * ptrScene;
 
 // prototypes

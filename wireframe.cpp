@@ -328,7 +328,7 @@ int WireframeFunction (int iMsg, HWND hWnd, WPARAM wParam, LPARAM lParam) {
  * 
  * return value : BOOL
  *********************************************************/
-BOOL CALLBACK TransformationDlgProc (HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK TransformationDlgProc (HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)		//?? FROM BOOL TO INT_PTR
 {
   	static ObjectCell * currentObject;
   	static Vector rv (0,0,0);
@@ -528,7 +528,7 @@ void InitTransformationDlg(HWND hwndDlg, Vector * rv, Vector * sv, Vector * tv)
  * 
  * return value : BOOL
  *********************************************************/
-BOOL CALLBACK ViewRefPointDlgProc (HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK ViewRefPointDlgProc (HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)		//?? FROM BOOL TO INT_PTR
 {
   	static HWND hwndParent = NULL;
   	HWND hwndCtrl;
@@ -792,7 +792,7 @@ void InitViewRefPointDlg(HWND hwndDlg, ViewPointRec * viewRefPoint)
  * 
  * return value : BOOL
  *********************************************************/
-BOOL CALLBACK AboutBoxDlgProc (HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK AboutBoxDlgProc (HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)		//?? FROM BOOL TO INT_PTR
 {
   	switch(uMsg) {
   	  	case WM_COMMAND:

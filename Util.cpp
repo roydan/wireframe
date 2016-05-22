@@ -2,8 +2,6 @@
 
 #include "Util.h"
 
-using namespace std;
-
 /**********************************************************
  *
  * classe Util
@@ -37,7 +35,7 @@ double Util::InRadians (double degrees) {
  * 
  * return value : BOOL
  *********************************************************/
-BOOL WritePrivateProfileInt (char * ApplicationName, char * keyName, int value, const char * fileName) {
+BOOL WritePrivateProfileInt (char * ApplicationName, char * keyName, int value, const char * fileName) {	//?? const char *
     char str[MAX_STRING_LENGTH];
  	sprintf (str, "%d", value);
  	return WritePrivateProfileString (ApplicationName, keyName, str, fileName);

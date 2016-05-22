@@ -3,6 +3,8 @@
 
 #include <windows.h>
 
+using namespace std;
+
 const int MAX_STRING_LENGTH = 100;
 
 /**********************************************************
