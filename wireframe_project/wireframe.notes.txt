@@ -1,0 +1,48 @@
+
+
+
+v130.1
+======
+added guicon.cpp / .h
+removed Matrix4x4.cpp / .h
+
+
+v130
+====
+
+not included in GitHub
+----------------------
+DemoXML.cpp / .h
+\wireframe_project\demo.xml
+folder \wireframe_project\rapidxml-1.13
+
+not included in GitHub
+----------------------
+guicon.cpp / .h
+
+
+Matrix4x4.cpp / .h removed from project
+
+
+v120
+====
+
+not included in GitHub
+----------------------
+DemoXML.cpp / .h
+\wireframe_project\demo.xml
+folder \wireframe_project\rapidxml-1.13
+
+not included in GitHub
+----------------------
+guicon.cpp / .h
+
+
+objects renamed FROM *.ob TO *.obj
+old objects moved to folder \_work\
+
+
+Matrix4x4.cpp / .h removed from project
+
+Matrix4x4.cpp / .h files RENAMED Matrix4.cpp / .h in folder \_work\
+
