@@ -3,19 +3,13 @@
 
 using namespace std;
 
-/**********************************************************
- *
- * classe MapRec
- *
- *********************************************************/
-
 class MapRec {
 private:
   	int xMid, yMid;
 
 public:
   	MapRec (int xMid = 0, int yMid = 0);
-    void operator = (const MapRec& another);
+    void operator = (const MapRec & another);
   	
   	int GetXMid() { return xMid; }
     int GetYMid() { return yMid; }
@@ -24,3 +18,4 @@ public:
 };
 
 #endif   // MAP_REC_H
+

@@ -5,13 +5,11 @@
 #include "MyMatrix.h"
 
 /**********************************************************
+ * 
  * MyMatrix
  * 
- * constructeur
- * 
- * parameters IN : none
- * 
  * return value : MyMatrix *
+ * 
  *********************************************************/
 MyMatrix::MyMatrix() {
 	nbLignes = MATRIX_SIZE;
@@ -22,6 +20,7 @@ MyMatrix::MyMatrix() {
 }
 
 /**********************************************************
+ * 
  * MyMatrix
  * 
  * constructeur de recopie
@@ -30,6 +29,7 @@ MyMatrix::MyMatrix() {
  *	const MyMatrix & m
  * 
  * return value : MyMatrix *
+ * 
  *********************************************************/
 MyMatrix::MyMatrix (const MyMatrix & m) {
     nbLignes = m.nbLignes;
@@ -43,18 +43,19 @@ MyMatrix::MyMatrix (const MyMatrix & m) {
 }
 
 /**********************************************************
+ * 
  * ~MyMatrix
  * 
  * destructeur
  * 
- * parameters IN : none
+ * TODO
  * 
- * return value : none
  *********************************************************/
 MyMatrix::~MyMatrix() {
 }
 
 /**********************************************************
+ * 
  * operator *
  * 
  * operateur de multiplication
@@ -65,6 +66,7 @@ MyMatrix::~MyMatrix() {
  *	MyMatrix m2
  * 
  * return value : MyMatrix
+ * 
  *********************************************************/
 MyMatrix operator * (MyMatrix m1, MyMatrix m2) {
 	MyMatrix m3;
@@ -81,13 +83,11 @@ MyMatrix operator * (MyMatrix m1, MyMatrix m2) {
 }
 
 /**********************************************************
+ * 
  * Zero
  * 
  * initialise tous les éléments du tableau des valeurs à 0
  * 
- * parameters IN : none
- * 
- * return value : none
  *********************************************************/
 void MyMatrix::Zero() {
   	for (int i = 0; i < nbLignes; i++) {
@@ -98,11 +98,9 @@ void MyMatrix::Zero() {
 }
 
 /**********************************************************
+ * 
  * Identity
  * 
- * parameters IN : none
- * 
- * return value : none
  *********************************************************/
 void MyMatrix::Identity() {
   	Zero();
@@ -112,6 +110,7 @@ void MyMatrix::Identity() {
 }
 
 /**********************************************************
+ * 
  * GetValue
  * 
  * parameters IN :
@@ -119,12 +118,14 @@ void MyMatrix::Identity() {
  *	int col
  * 
  * return value : double
+ * 
  *********************************************************/
 double MyMatrix::GetValue (int row, int col) {
 	return matrix[row][col];
 }
 
 /**********************************************************
+ * 
  * SetValue
  * 
  * parameters IN :
@@ -132,13 +133,13 @@ double MyMatrix::GetValue (int row, int col) {
  *	int col
  *	double value
  * 
- * return value : none
  *********************************************************/
 void MyMatrix::SetValue (int row, int col, double value) {
 	matrix[row][col] = value;
 }
 
 /**********************************************************
+ * 
  * operator <<
  * 
  * parameters IN :
@@ -146,6 +147,7 @@ void MyMatrix::SetValue (int row, int col, double value) {
  *	const MyMatrix &m
  * 
  * return value : ostream &
+ * 
  *********************************************************/
 ostream& operator << (ostream & os, const MyMatrix & m) {
 	//?? os << setprecision (8) << setiosflags (ios::right | ios::showpoint);

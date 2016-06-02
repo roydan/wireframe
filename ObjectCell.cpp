@@ -4,7 +4,6 @@
 
 #include "ObjectCell.h"
 #include "ObjectScene.h"
-#include "graphics3d.h"
 #include "Util.h"
 
 /**********************************************************
@@ -26,16 +25,13 @@ ObjectCell::ObjectCell (ObjectScene * ptrScene) {
 }
 
 /**********************************************************
+ * 
  * CalculateEyeCoordinates
  * 
- * parameters IN : none
- * 
- * return value : none
  *********************************************************/
 void ObjectCell::CalculateEyeCoordinates() {
-  	VertexCell * currentVertex;
 	for (vector<VertexCell *>::iterator it = vertexCellList.begin(); it != vertexCellList.end(); ++it) {
-		currentVertex = *it;
+		VertexCell * currentVertex = *it;
   	  	currentVertex->eyePos.VectorMatrix (currentVertex->worldPos, ptrScene->viewTransformation);
 
   	  	if (currentVertex->eyePos.GetZ() < ptrScene->zParams.GetZMin()) {
@@ -47,36 +43,30 @@ void ObjectCell::CalculateEyeCoordinates() {
 }
 
 /**********************************************************
+ * 
  * RemoveHiddenSurfaces
  * 
- * parameters IN : none
- * 
- * return value : none
  *********************************************************/
 void ObjectCell::RemoveHiddenSurfaces() {
-  	SurfaceCell * currentSurface;
     for (vector<SurfaceCell *>::iterator it = surfaceCellList.begin(); it != surfaceCellList.end(); ++it) {
-        currentSurface = *it;
+        SurfaceCell * currentSurface = *it;
   	  	RemovePolygonIfHidden (currentSurface);
     }
 }
 
 /**********************************************************
- * RemovePolygonIfHidden
  * 
- * private
+ * RemovePolygonIfHidden
  * 
  * parameters IN :
  *	SurfaceCell * currentSurface
  * 
- * return value : none
  *********************************************************/
 void ObjectCell::RemovePolygonIfHidden (SurfaceCell * currentSurface) {
   	MyVector viewDirection;
 
-    PolygonCell * currentPolygon;
     for (vector<PolygonCell *>::iterator it = currentSurface->polygonCellList.begin(); it != currentSurface->polygonCellList.end(); ++it) {
-        currentPolygon = *it;
+        PolygonCell * currentPolygon = *it;
 
 		VertexCell * currentVertexHead = currentPolygon->vertexListHead->vertex;
   	  	viewDirection.SetX (ptrScene->viewRefPoint.GetXView() - currentVertexHead->worldPos.GetX());
@@ -88,11 +78,9 @@ void ObjectCell::RemovePolygonIfHidden (SurfaceCell * currentSurface) {
 }
 
 /**********************************************************
+ * 
  * CalculateNormals
  * 
- * parameters IN : none
- * 
- * return value : none
  *********************************************************/
 void ObjectCell::CalculateNormals() {
   	CalculatePolygonNormals();
@@ -100,36 +88,28 @@ void ObjectCell::CalculateNormals() {
 }
 
 /**********************************************************
+ * 
  * CalculatePolygonNormals
  * 
- * private
- * 
- * parameters IN : none
- * 
- * return value : none
  *********************************************************/
 void ObjectCell::CalculatePolygonNormals() {
-  	SurfaceCell * currentSurface;
     for (vector<SurfaceCell *>::iterator it_surface = surfaceCellList.begin(); it_surface != surfaceCellList.end(); ++it_surface) {
-        currentSurface = *it_surface;
+        SurfaceCell * currentSurface = *it_surface;
 
-  		PolygonCell * currentPolygon;
         for (vector<PolygonCell *>::iterator it_polygon = currentSurface->polygonCellList.begin(); it_polygon != currentSurface->polygonCellList.end(); ++it_polygon) {
-            currentPolygon = *it_polygon;
+            PolygonCell * currentPolygon = *it_polygon;
   	  	  	CalculateAPolygonNormal (currentPolygon);
   	  	}
     }
 }
 
 /**********************************************************
- * CalculateAPolygonNormal
  * 
- * private
+ * CalculateAPolygonNormal
  * 
  * parameters IN :
  *	PolygonCell * currentPolygon
  * 
- * return value : none
  *********************************************************/
 void ObjectCell::CalculateAPolygonNormal (PolygonCell * currentPolygon) {
   	MyVector w1, w2, w3;
@@ -142,39 +122,38 @@ void ObjectCell::CalculateAPolygonNormal (PolygonCell * currentPolygon) {
   	vertexList = vertexList->next;
   	w3 = vertexList->vertex->worldPos;
 
-  	currentPolygon->polyNormal.SetX (((w1.GetY() - w2.GetY()) * (w2.GetZ() + w1.GetZ())) + ((w2.GetY() - w3.GetY()) * (w3.GetZ() + w2.GetZ())) + ((w3.GetY() - w1.GetY()) * (w1.GetZ() + w3.GetZ())));
-  	currentPolygon->polyNormal.SetY (((w1.GetZ() - w2.GetZ()) * (w2.GetX() + w1.GetX())) + ((w2.GetZ() - w3.GetZ()) * (w3.GetX() + w2.GetX())) + ((w3.GetZ() - w1.GetZ()) * (w1.GetX() + w3.GetX())));
-  	currentPolygon->polyNormal.SetZ (((w1.GetX() - w2.GetX()) * (w2.GetY() + w1.GetY())) + ((w2.GetX() - w3.GetX()) * (w3.GetY() + w2.GetY())) + ((w3.GetX() - w1.GetX()) * (w1.GetY() + w3.GetY())));
+  	currentPolygon->polyNormal.SetX (((w1.GetY() - w2.GetY()) * (w2.GetZ() + w1.GetZ())) +
+	  								((w2.GetY() - w3.GetY()) * (w3.GetZ() + w2.GetZ())) +
+									((w3.GetY() - w1.GetY()) * (w1.GetZ() + w3.GetZ())));
+  	currentPolygon->polyNormal.SetY (((w1.GetZ() - w2.GetZ()) * (w2.GetX() + w1.GetX())) +
+	  								((w2.GetZ() - w3.GetZ()) * (w3.GetX() + w2.GetX())) +
+									((w3.GetZ() - w1.GetZ()) * (w1.GetX() + w3.GetX())));
+  	currentPolygon->polyNormal.SetZ (((w1.GetX() - w2.GetX()) * (w2.GetY() + w1.GetY())) +
+	  								((w2.GetX() - w3.GetX()) * (w3.GetY() + w2.GetY())) +
+									((w3.GetX() - w1.GetX()) * (w1.GetY() + w3.GetY())));
 
   	currentPolygon->polyNormal.Normalize();
 }
 
 /**********************************************************
+ * 
  * CalculateVertexNormals
  * 
- * private
- * 
- * parameters IN : none
- * 
- * return value : none
  *********************************************************/
 void ObjectCell::CalculateVertexNormals() {
-  	VertexCell * currentVertex;
 	for (vector<VertexCell *>::iterator it = vertexCellList.begin(); it != vertexCellList.end(); ++it) {
-		currentVertex = *it;
+		VertexCell * currentVertex = *it;
   		CalculateAVertexNormal (currentVertex);
     }
 }
 
 /**********************************************************
+ *
  * CalculateAVertexNormal
- * 
- * private
  * 
  * parameters IN :
  *	VertexCell * currentVertex
  * 
- * return value : none
  *********************************************************/
 void ObjectCell::CalculateAVertexNormal (VertexCell * currentVertex) {
   	MyVector sumVector(0, 0, 0);
@@ -200,16 +179,13 @@ void ObjectCell::CalculateAVertexNormal (VertexCell * currentVertex) {
 }
 
 /**********************************************************
+ * 
  * TransformToWorldCoordinates
  * 
- * parameters IN : none
- * 
- * return value : none
  *********************************************************/
 void ObjectCell::TransformToWorldCoordinates() {
-  	VertexCell * currentVertex;
 	for (vector<VertexCell *>::iterator it = vertexCellList.begin(); it != vertexCellList.end(); ++it) {
-		currentVertex = *it;
+		VertexCell * currentVertex = *it;
   	  	currentVertex->worldPos.VectorMatrix (currentVertex->localPos, transformation);
     }
 }
@@ -261,16 +237,14 @@ void ObjectCell::GetTransformation (int transType, MyVector transVector) {
 }
 
 /**********************************************************
- * PRIVATE
- *********************************************************/
-
-/**********************************************************
+ * 
  * GetTranslationMatrix
  * 
  * parameters IN :
  *	MyVector tv
  * 
  * return value : MyMatrix
+ * 
  *********************************************************/
 MyMatrix ObjectCell::GetTranslationMatrix (MyVector tv) {
 	MyMatrix tm;
@@ -282,12 +256,14 @@ MyMatrix ObjectCell::GetTranslationMatrix (MyVector tv) {
 }
 
 /**********************************************************
+ * 
  * GetScalingMatrix
  * 
  * parameters IN :
  *	MyVector sv
  * 
  * return value : MyMatrix
+ * 
  *********************************************************/
 MyMatrix ObjectCell::GetScalingMatrix (MyVector sv) {
 	MyMatrix sm;
@@ -299,6 +275,7 @@ MyMatrix ObjectCell::GetScalingMatrix (MyVector sv) {
 }
 
 /**********************************************************
+ * 
  * GetRotationMatrix
  * 
  * rotation en degre
@@ -308,6 +285,7 @@ MyMatrix ObjectCell::GetScalingMatrix (MyVector sv) {
  *	MyVector rv
  * 
  * return value : MyMatrix
+ * 
  *********************************************************/
 MyMatrix ObjectCell::GetRotationMatrix (MyVector rv) {
 	MyMatrix rm;
@@ -340,3 +318,4 @@ MyMatrix ObjectCell::GetRotationMatrix (MyVector rv) {
   	rm = xRot * rm;
 	return rm;
 }
+

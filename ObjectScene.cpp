@@ -213,9 +213,8 @@ void ObjectScene::WireFrameScene (HWND hWnd) {
 void ObjectScene::TransformScene() {
   	zParams = ZParamRec (HIGH_DOUBLE, -HIGH_DOUBLE, 0.);
 
-  	ObjectCell * currentObject;
 	for (vector<ObjectCell *>::iterator it = objectCellList.begin(); it != objectCellList.end(); ++it) {
-		currentObject = *it;
+		ObjectCell * currentObject = *it;
   	  	currentObject->TransformToWorldCoordinates();
   	  	currentObject->CalculateNormals();
   	  	currentObject->RemoveHiddenSurfaces();

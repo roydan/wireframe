@@ -4,9 +4,8 @@
 #include "Util.h"
 
 /**********************************************************
- * ViewPointRec
  * 
- * constructeur
+ * ViewPointRec
  * 
  * parameters IN:
  * 	int viewPlaneDist	default = 1000
@@ -15,6 +14,7 @@
  *	int phi				default = 45
  * 
  * return value : ViewPointRec *
+ * 
  *********************************************************/
 ViewPointRec::ViewPointRec (int viewPlaneDist, int rho, int theta, int phi) {
     this->viewPlaneDist = viewPlaneDist;
@@ -24,14 +24,14 @@ ViewPointRec::ViewPointRec (int viewPlaneDist, int rho, int theta, int phi) {
 }
 
 /**********************************************************
+ * 
  * operator =
  * 
  * parameters IN :
- *	const ViewPointRec& another
+ *	const ViewPointRec & another
  * 
- * return value : none
  *********************************************************/
-void ViewPointRec::operator = (const ViewPointRec& another)
+void ViewPointRec::operator = (const ViewPointRec & another)
 {
     this->viewPlaneDist = another.viewPlaneDist;
   	this->rho = another.rho;
@@ -40,12 +40,12 @@ void ViewPointRec::operator = (const ViewPointRec& another)
 }
 
 /**********************************************************
+ * 
  * SetViewVariables
  * 
  * parameters IN :
  *	MyMatrix & viewTransformation
  * 
- * return value : none
  *********************************************************/
 void ViewPointRec::SetViewVariables (MyMatrix & viewTransformation) {
   	sinTheta = sin ( Util::InRadians (theta) );
@@ -60,12 +60,12 @@ void ViewPointRec::SetViewVariables (MyMatrix & viewTransformation) {
 }
 
 /**********************************************************
+ * 
  * SetViewTransformation
  * 
  * parameters IN :
  *	MyMatrix & viewTransformation
  * 
- * return value : none
  *********************************************************/
 void ViewPointRec::SetViewTransformation (MyMatrix & viewTransformation) {
   	viewTransformation.Identity();
@@ -80,3 +80,4 @@ void ViewPointRec::SetViewTransformation (MyMatrix & viewTransformation) {
   	viewTransformation[2][2] = -cosPhi;
   	viewTransformation[3][2] =  rho;
 }
+

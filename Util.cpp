@@ -9,12 +9,14 @@
  *********************************************************/
  
 /**********************************************************
+ * 
  * InRadians
  * 
  * parameters IN :
  *	double degrees
  * 
  * return value : double
+ * 
  *********************************************************/
 double Util::InRadians (double degrees) {
   	return (degrees * Util::PI() / 180.0);
