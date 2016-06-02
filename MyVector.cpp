@@ -2,63 +2,70 @@
 #include <iostream>
 #include <iomanip>
 
-#include "Vector.h"
-#include "Matrix.h"
+#include "MyVector.h"
 
 /**********************************************************
- * Vector
  * 
- * constructeur
+ * vecteur 3D
+ * 
+ *********************************************************/
+
+/**********************************************************
+ * 
+ * MyVector
  * 
  * parameters IN:
  * 	double x	default = 0.0
  *	double y	default = 0.0
  *	double z	default = 0.0
  * 
- * return value : Vector *
+ * return value : MyVector *
+ * 
  *********************************************************/
-Vector::Vector (double x, double y, double z) {
+MyVector::MyVector (double x, double y, double z) {
 	this->x = x;
 	this->y = y;
 	this->z = z;
 }
 
 /**********************************************************
- * Vector
+ * 
+ * MyVector
  * 
  * constructeur de recopie
  * 
  * parameters IN:
- * 	const Vector & v
+ * 	const MyVector & v
  * 
- * return value : Vector *
+ * return value : MyVector *
+ * 
  *********************************************************/
-Vector::Vector (const Vector & v) {
+MyVector::MyVector (const MyVector & v) {
 	x = v.x;
 	y = v.y;
 	z = v.z;
 }
 
 /**********************************************************
+ * 
  * DotProduct
  * 
  * parameters IN:
- * 	const Vector & v
+ * 	const MyVector & v
  * 
  * return value : double
+ * 
  *********************************************************/
-double Vector::DotProduct (const Vector & v) {
+double MyVector::DotProduct (const MyVector & v) {
   	return (x * v.x) + (y * v.y) + (z * v.z);
 }
 
 /**********************************************************
+ * 
  * Normalize
  * 
- * parameters IN: none
- * 
- * return value : none
  *********************************************************/
-void Vector::Normalize() {
+void MyVector::Normalize() {
   	double denominator = Magnitude();
 	if (denominator != 0) {
   	  	x /= denominator;
@@ -68,41 +75,59 @@ void Vector::Normalize() {
 }
 
 /**********************************************************
+ * 
  * Magnitude
  * 
- * parameters IN: none
- * 
  * return value : double
+ * 
  *********************************************************/
-double Vector::Magnitude() {
+double MyVector::Magnitude() {
   	return sqrt (x*x + y*y + z*z);
 }
 
 /**********************************************************
+ * 
  * VectorMatrix
  * 
  * parameters IN:
- * 	const Vector & v
- *	Matrix m
+ * 	const MyVector & v
+ *	MyMatrix m
  * 
- * return value : none
  *********************************************************/
-void Vector::VectorMatrix (const Vector & v, Matrix m) {
+void MyVector::VectorMatrix (const MyVector & v, MyMatrix m) {
   	x = v.x * m[0][0] + v.y * m[1][0] + v.z * m[2][0] + m[3][0];
   	y = v.x * m[0][1] + v.y * m[1][1] + v.z * m[2][1] + m[3][1];
   	z = v.x * m[0][2] + v.y * m[1][2] + v.z * m[2][2] + m[3][2];
 }
 
 /**********************************************************
+ * 
+ * VectorMatrix
+ * 
+ * parameters IN:
+ *	MyMatrix m
+ * 
+ *********************************************************/
+void MyVector::VectorMatrix (MyMatrix m) {
+	MyVector v = MyVector(x,y,z);
+  	x = v.x * m[0][0] + v.y * m[1][0] + v.z * m[2][0] + m[3][0];
+  	y = v.x * m[0][1] + v.y * m[1][1] + v.z * m[2][1] + m[3][1];
+  	z = v.x * m[0][2] + v.y * m[1][2] + v.z * m[2][2] + m[3][2];
+}
+
+/**********************************************************
+ * 
  * operator <<
  * 
  * parameters IN :
  *	ostream &os
- *	const Vector &v
+ *	const MyVector &v
  * 
  * return value : ostream &
+ * 
  *********************************************************/
-ostream& operator << (ostream & os, const Vector & v) {
+ostream& operator << (ostream & os, const MyVector & v) {
 	os << "[ " << v.GetX() << " , " << v.GetY() << " , " << v.GetZ() << " ]" << endl;
 	return os;
 }
+

@@ -34,7 +34,7 @@ ObjectCell::ObjectCell (ObjectScene * ptrScene) {
  *********************************************************/
 void ObjectCell::CalculateEyeCoordinates() {
   	VertexCell * currentVertex;
-	for (vector<VertexCell *>::iterator it = vertexHead.begin(); it != vertexHead.end(); ++it) {
+	for (vector<VertexCell *>::iterator it = vertexCellList.begin(); it != vertexCellList.end(); ++it) {
 		currentVertex = *it;
   	  	currentVertex->eyePos.VectorMatrix (currentVertex->worldPos, ptrScene->viewTransformation);
 
@@ -55,7 +55,7 @@ void ObjectCell::CalculateEyeCoordinates() {
  *********************************************************/
 void ObjectCell::RemoveHiddenSurfaces() {
   	SurfaceCell * currentSurface;
-    for (vector<SurfaceCell *>::iterator it = surfaceHead.begin(); it != surfaceHead.end(); ++it) {
+    for (vector<SurfaceCell *>::iterator it = surfaceCellList.begin(); it != surfaceCellList.end(); ++it) {
         currentSurface = *it;
   	  	RemovePolygonIfHidden (currentSurface);
     }
@@ -72,10 +72,10 @@ void ObjectCell::RemoveHiddenSurfaces() {
  * return value : none
  *********************************************************/
 void ObjectCell::RemovePolygonIfHidden (SurfaceCell * currentSurface) {
-  	Vector viewDirection;
+  	MyVector viewDirection;
 
     PolygonCell * currentPolygon;
-    for (vector<PolygonCell *>::iterator it = currentSurface->polygonHead.begin(); it != currentSurface->polygonHead.end(); ++it) {
+    for (vector<PolygonCell *>::iterator it = currentSurface->polygonCellList.begin(); it != currentSurface->polygonCellList.end(); ++it) {
         currentPolygon = *it;
 
 		VertexCell * currentVertexHead = currentPolygon->vertexListHead->vertex;
@@ -110,11 +110,11 @@ void ObjectCell::CalculateNormals() {
  *********************************************************/
 void ObjectCell::CalculatePolygonNormals() {
   	SurfaceCell * currentSurface;
-    for (vector<SurfaceCell *>::iterator it_surface = surfaceHead.begin(); it_surface != surfaceHead.end(); ++it_surface) {
+    for (vector<SurfaceCell *>::iterator it_surface = surfaceCellList.begin(); it_surface != surfaceCellList.end(); ++it_surface) {
         currentSurface = *it_surface;
 
   		PolygonCell * currentPolygon;
-        for (vector<PolygonCell *>::iterator it_polygon = currentSurface->polygonHead.begin(); it_polygon != currentSurface->polygonHead.end(); ++it_polygon) {
+        for (vector<PolygonCell *>::iterator it_polygon = currentSurface->polygonCellList.begin(); it_polygon != currentSurface->polygonCellList.end(); ++it_polygon) {
             currentPolygon = *it_polygon;
   	  	  	CalculateAPolygonNormal (currentPolygon);
   	  	}
@@ -132,7 +132,7 @@ void ObjectCell::CalculatePolygonNormals() {
  * return value : none
  *********************************************************/
 void ObjectCell::CalculateAPolygonNormal (PolygonCell * currentPolygon) {
-  	Vector w1, w2, w3;
+  	MyVector w1, w2, w3;
 
   	VertexList * vertexList = currentPolygon->vertexListHead;
 
@@ -160,7 +160,7 @@ void ObjectCell::CalculateAPolygonNormal (PolygonCell * currentPolygon) {
  *********************************************************/
 void ObjectCell::CalculateVertexNormals() {
   	VertexCell * currentVertex;
-	for (vector<VertexCell *>::iterator it = vertexHead.begin(); it != vertexHead.end(); ++it) {
+	for (vector<VertexCell *>::iterator it = vertexCellList.begin(); it != vertexCellList.end(); ++it) {
 		currentVertex = *it;
   		CalculateAVertexNormal (currentVertex);
     }
@@ -177,7 +177,7 @@ void ObjectCell::CalculateVertexNormals() {
  * return value : none
  *********************************************************/
 void ObjectCell::CalculateAVertexNormal (VertexCell * currentVertex) {
-  	Vector sumVector(0, 0, 0);
+  	MyVector sumVector(0, 0, 0);
   	int    polyCount = 0;
 
   	PolygonList * polyList = currentVertex->polyListHead;
@@ -195,7 +195,7 @@ void ObjectCell::CalculateAVertexNormal (VertexCell * currentVertex) {
   	  	currentVertex->vertexNormal.SetZ (sumVector.GetZ() / polyCount);
   	  	currentVertex->vertexNormal.Normalize();
   	} else {
-  	  	currentVertex->vertexNormal = Vector (0, 0, 0);		//?? was 1,1,1
+  	  	currentVertex->vertexNormal = MyVector (0, 0, 0);		//?? was 1,1,1
     }
 }
 
@@ -208,7 +208,7 @@ void ObjectCell::CalculateAVertexNormal (VertexCell * currentVertex) {
  *********************************************************/
 void ObjectCell::TransformToWorldCoordinates() {
   	VertexCell * currentVertex;
-	for (vector<VertexCell *>::iterator it = vertexHead.begin(); it != vertexHead.end(); ++it) {
+	for (vector<VertexCell *>::iterator it = vertexCellList.begin(); it != vertexCellList.end(); ++it) {
 		currentVertex = *it;
   	  	currentVertex->worldPos.VectorMatrix (currentVertex->localPos, transformation);
     }
@@ -219,12 +219,12 @@ void ObjectCell::TransformToWorldCoordinates() {
  * 
  * parameters IN :
  *	int transType
- *	Vector transVector
+ *	MyVector transVector
  * 
  * return value : none
  *********************************************************/
-void ObjectCell::GetTransformation (int transType, Vector transVector) {
-  	Matrix transMatrix;
+void ObjectCell::GetTransformation (int transType, MyVector transVector) {
+  	MyMatrix transMatrix;
   	transMatrix.Identity();
 
   	switch (transType) {
@@ -268,12 +268,12 @@ void ObjectCell::GetTransformation (int transType, Vector transVector) {
  * GetTranslationMatrix
  * 
  * parameters IN :
- *	Vector tv
+ *	MyVector tv
  * 
- * return value : Matrix
+ * return value : MyMatrix
  *********************************************************/
-Matrix ObjectCell::GetTranslationMatrix (Vector tv) {
-	Matrix tm;
+MyMatrix ObjectCell::GetTranslationMatrix (MyVector tv) {
+	MyMatrix tm;
   	tm.Identity();
   	tm[3][0] = tv.GetX();
   	tm[3][1] = tv.GetY();
@@ -285,12 +285,12 @@ Matrix ObjectCell::GetTranslationMatrix (Vector tv) {
  * GetScalingMatrix
  * 
  * parameters IN :
- *	Vector sv
+ *	MyVector sv
  * 
- * return value : Matrix
+ * return value : MyMatrix
  *********************************************************/
-Matrix ObjectCell::GetScalingMatrix (Vector sv) {
-	Matrix sm;
+MyMatrix ObjectCell::GetScalingMatrix (MyVector sv) {
+	MyMatrix sm;
   	sm.Identity();
   	sm[0][0] = sv.GetX();
   	sm[1][1] = sv.GetY();
@@ -305,13 +305,13 @@ Matrix ObjectCell::GetScalingMatrix (Vector sv) {
  * angle positif -> rotation anti-horaire
  * 
  * parameters IN :
- *	Vector rv
+ *	MyVector rv
  * 
- * return value : Matrix
+ * return value : MyMatrix
  *********************************************************/
-Matrix ObjectCell::GetRotationMatrix (Vector rv) {
-	Matrix rm;
-  	Matrix xRot, yRot, zRot;
+MyMatrix ObjectCell::GetRotationMatrix (MyVector rv) {
+	MyMatrix rm;
+  	MyMatrix xRot, yRot, zRot;
 
 	xRot.Identity();
   	yRot.Identity();

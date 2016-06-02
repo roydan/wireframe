@@ -277,8 +277,8 @@ static void TestSub (void) {
 	cout << "TestSub" << endl;
        
 	/**********************************
-	Matrix m;
-    cout << "cout << Matrix" << endl;
+	MyMatrix m;
+    cout << "cout << MyMatrix" << endl;
 	cout << m << endl;
 	cout << endl;
 
@@ -311,8 +311,8 @@ static void TestSub (void) {
 	cout << endl;
 
     m.Identity();
-    Matrix m2(m);
-    cout << "constructeur de recopie: Matrix m2(m.Identity())" << endl;
+    MyMatrix m2(m);
+    cout << "constructeur de recopie: MyMatrix m2(m.Identity())" << endl;
 	cout << m2 << endl;
 	cout << endl;
     
@@ -322,7 +322,7 @@ static void TestSub (void) {
 	m2[2][2] = 2.;
 	m2[3][3] = 2.;
 
-    Matrix m3;
+    MyMatrix m3;
     m3.Identity();
 	m3[0][0] = 2.;
 	m3[1][1] = 2.;

@@ -4,9 +4,9 @@
 #include <string>
 #include <vector>
 
-#include "Vector.h"
+#include "MyVector.h"
 #include "ScreenRec.h"
-#include "Matrix.h"
+#include "MyMatrix.h"
 #include "graphics3d.h"
 
 using namespace std;
@@ -17,28 +17,30 @@ class PolygonList;			// declaration
 
 /**********************************************************
  *
- * classe VertexCell
+ * vertex
+ *
+ * TODO
+ * convert polyListHead to vector<PolygonCell indexes>
  *
  *********************************************************/
-
-// vertex
 class VertexCell {
 public:
-  	Vector localPos;		// coordonnees des points
-  	Vector worldPos;
-  	Vector eyePos;
-  	Vector vertexNormal;
+  	MyVector localPos;		// coordonnees des points
+  	MyVector worldPos;
+  	MyVector eyePos;
+  	MyVector vertexNormal;
   	ScreenRec screenPos;
   	PolygonList * polyListHead;
 };
 
 /**********************************************************
  *
- * classe VertexList
+ * liste de pointeurs de vertex
+ * 
+ * TODO
+ * convert to vector<VertexCell indexes>
  *
  *********************************************************/
-
-// liste de pointeurs de vertex
 class VertexList {
 public:
   	VertexCell * vertex;
@@ -47,25 +49,27 @@ public:
 
 /**********************************************************
  *
- * classe PolygonCell
+ * polygone
+ *
+ * TODO
+ * convert vertexListHead to vector<VertexCell indexes>
  *
  *********************************************************/
-
-// polygone
 class PolygonCell {
 public:
   	VertexList * vertexListHead;
-  	Vector polyNormal;
-  	bool   polyVisible;
+  	MyVector	polyNormal;
+  	bool		polyVisible;		// Culled
 };
 
 /**********************************************************
  *
- * classe PolygonList
+ * liste de pointeurs de polygone
+ *
+ * TODO
+ * convert to vector<PolygonCell indexes>
  *
  *********************************************************/
-
-// liste de pointeurs de polygone
 class PolygonList {
 public:
   	PolygonCell * poly;
@@ -74,23 +78,19 @@ public:
 
 /**********************************************************
  *
- * classe SurfaceCell
+ * surface
  *
  *********************************************************/
-
-// surface
 class SurfaceCell {
 public:
-  	vector<PolygonCell *> polygonHead;
+  	vector<PolygonCell *> polygonCellList;
 };
 
 /**********************************************************
  *
- * classe ObjectCell
+ * objet graphique
  *
  *********************************************************/
-
-// objet graphique
 class ObjectCell {
 private:
     class ObjectScene * ptrScene;
@@ -99,9 +99,9 @@ public:
   	int    		type;		//++ added
   	string 		name;
   	int    		idNo;
-  	vector<SurfaceCell *> surfaceHead;
-  	vector<VertexCell *>  vertexHead;
-  	Matrix      		  transformation;
+  	vector<SurfaceCell *> surfaceCellList;
+  	vector<VertexCell *>  vertexCellList;
+  	MyMatrix      		  transformation;
     vector<VertexCell *>  vertexAt;
     int         surfaceAt[MAX_NO_OF_VERTICES];
 
@@ -113,7 +113,7 @@ public:
 	void RemoveHiddenSurfaces();
 	void CalculateNormals();
 	void TransformToWorldCoordinates();
-	void GetTransformation (int, Vector);
+	void GetTransformation (int, MyVector);
 
 private:
 	void RemovePolygonIfHidden (SurfaceCell *);
@@ -122,9 +122,9 @@ private:
 	void CalculateVertexNormals();
 	void CalculateAVertexNormal (VertexCell *);
 
-	Matrix GetTranslationMatrix (Vector);
-	Matrix GetScalingMatrix (Vector);
-	Matrix GetRotationMatrix (Vector);
+	MyMatrix GetTranslationMatrix (MyVector);
+	MyMatrix GetScalingMatrix (MyVector);
+	MyMatrix GetRotationMatrix (MyVector);
 };
 
 #endif   // OBJECT_CELL_H

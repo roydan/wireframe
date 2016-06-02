@@ -24,17 +24,17 @@
  *		TO											FROM
  *
  * class ObjectScene
- * 		vector<ObjectCell *> objectHead;		ObjectCell * objectHead;
+ * 		vector<ObjectCell *> objectCellList;		ObjectCell * objectCellList;
  *
- *      objectHead.size()		                noOfObjects
+ *      objectCellList.size()		                noOfObjects
  *
  * class ObjectCell
- * 		vector<SurfaceCell *> surfaceHead;		SurfaceCell * surfaceHead;
- * 		vector<VertexCell *>  vertexHead;		VertexCell *  vertexHead;
+ * 		vector<SurfaceCell *> surfaceCellList;		SurfaceCell * surfaceCellList;
+ * 		vector<VertexCell *>  vertexCellList;		VertexCell *  vertexCellList;
  * 		vector<VertexCell *>  vertexAt;			VertexCell *  vertexAt[MAX_NO_OF_VERTICES];
  *
  * class SurfaceCell
- *   	vector<PolygonCell *> polygonHead;		PolygonCell * polygonHead;
+ *   	vector<PolygonCell *> polygonCellList;		PolygonCell * polygonCellList;
  *
  *
  *
@@ -52,7 +52,7 @@
  *
  **********************************************************
  * 
- * added points FROM vertexAt[] TO vertexHead
+ * added points FROM vertexAt[] TO vertexCellList
  * 
  *
  *
@@ -104,7 +104,7 @@
 #include "renderer.h"
 #include "ObjectScene.h"
 #include "graphics3d.h"
-#include "Vector.h"
+#include "MyVector.h"
 #include "wireframe_app.h"
 
 const char FILTER_OBJECT[] = "Object Files (*.OBJ)\0*.obj\0" \
@@ -229,7 +229,7 @@ int WireframeFunction (int iMsg, HWND hWnd, WPARAM wParam, LPARAM lParam) {
   	  	case WIREFRAME_WM_PAINT:
 		{
   	  	  	// Wireframe scene
-			if (ptrScene->objectHead.size() > 0) {
+			if (ptrScene->objectCellList.size() > 0) {
   	  	    	if (ptrScene->sceneChanged) {
   	  	      		ptrScene->TransformScene();
 				}
@@ -241,8 +241,8 @@ int WireframeFunction (int iMsg, HWND hWnd, WPARAM wParam, LPARAM lParam) {
   	  	case WIREFRAME_RENDER_SCENE:
         {
 			// Render Scene
-			if (ptrScene->objectHead.size() > 0) {
-				RenderScene (hWnd, ptrScene->objectHead);
+			if (ptrScene->objectCellList.size() > 0) {
+				RenderScene (hWnd, ptrScene->objectCellList);
 			} else {
   	  	    	MessageBox (NULL, "No objects currently loaded", NULL, MB_OK);
 			}
@@ -252,7 +252,7 @@ int WireframeFunction (int iMsg, HWND hWnd, WPARAM wParam, LPARAM lParam) {
   	  	case WIREFRAME_TRANSFORM_OBJECT:
 		{
   	  	  	// Transform an object
-			if (ptrScene->objectHead.size() > 0) {
+			if (ptrScene->objectCellList.size() > 0) {
   	  	    	DialogBoxParam(hInst, "TRANSFORMATION_DLG", hWnd, TransformationDlgProc, 0L);
 			} else {
   	  	    	MessageBox (NULL, "No objects currently loaded", NULL, MB_OK);
@@ -263,7 +263,7 @@ int WireframeFunction (int iMsg, HWND hWnd, WPARAM wParam, LPARAM lParam) {
   	  	case WIREFRAME_VIEW_POINT:
 		{
   	  	  	// Move view point
-			if (ptrScene->objectHead.size() > 0) {
+			if (ptrScene->objectCellList.size() > 0) {
   	  	    	DialogBoxParam(hInst, "POINT_VUE_DLG", hWnd, ViewRefPointDlgProc, 0L);
 			} else {
   	  	    	MessageBox (NULL, "No objects currently loaded", NULL, MB_OK);
@@ -331,9 +331,9 @@ int WireframeFunction (int iMsg, HWND hWnd, WPARAM wParam, LPARAM lParam) {
 INT_PTR CALLBACK TransformationDlgProc (HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)		//?? FROM BOOL TO INT_PTR
 {
   	static ObjectCell * currentObject;
-  	static Vector rv (0,0,0);
-  	static Vector sv (1,1,1);
-  	static Vector tv (0,0,0);
+  	static MyVector rv (0,0,0);
+  	static MyVector sv (1,1,1);
+  	static MyVector tv (0,0,0);
   	static LONG index = -1;
   	static HWND hwndParent = NULL;
 
@@ -343,7 +343,7 @@ INT_PTR CALLBACK TransformationDlgProc (HWND hwndDlg, UINT uMsg, WPARAM wParam, 
 		  	hwndParent = GetParent (hwndDlg);
 
 		  	// select object
-			for (vector<ObjectCell *>::iterator it = ptrScene->objectHead.begin(); it != ptrScene->objectHead.end(); ++it) {
+			for (vector<ObjectCell *>::iterator it = ptrScene->objectCellList.begin(); it != ptrScene->objectCellList.end(); ++it) {
 				currentObject = *it;
 		    	index = SendDlgItemMessage (hwndDlg, IDC_CB_OBJECT, CB_ADDSTRING, 0, (LPARAM)(LPCTSTR)currentObject->name.c_str());
 		  	}
@@ -351,7 +351,7 @@ INT_PTR CALLBACK TransformationDlgProc (HWND hwndDlg, UINT uMsg, WPARAM wParam, 
 		  	index = 0;
 		  	SendDlgItemMessage (hwndDlg, IDC_CB_OBJECT, CB_SETCURSEL, (WPARAM)index, 0);
 
-		  	currentObject = ptrScene->objectHead[index];
+		  	currentObject = ptrScene->objectCellList[index];
 
   	    	InitTransformationDlg (hwndDlg, &rv, &sv, &tv);
 		  	return FALSE;
@@ -366,7 +366,7 @@ INT_PTR CALLBACK TransformationDlgProc (HWND hwndDlg, UINT uMsg, WPARAM wParam, 
 					  	case CBN_SELCHANGE:
 						{
 				        	index = SendDlgItemMessage (hwndDlg, IDC_CB_OBJECT, CB_GETCURSEL, 0, 0);
-				        	currentObject = ptrScene->objectHead[index];
+				        	currentObject = ptrScene->objectCellList[index];
 				        	return TRUE;
 						}
 					}	// LOWORD(wParam)
@@ -464,25 +464,25 @@ INT_PTR CALLBACK TransformationDlgProc (HWND hwndDlg, UINT uMsg, WPARAM wParam, 
  * 
  * parameters IN:
  *	HWND hwndDlg
- * 	Vector * rv
- *	Vector * sv
- *	Vector * tv
+ * 	MyVector * rv
+ *	MyVector * sv
+ *	MyVector * tv
  * 
  * return value : void
  *********************************************************/
-void InitTransformationDlg(HWND hwndDlg, Vector * rv, Vector * sv, Vector * tv)
+void InitTransformationDlg(HWND hwndDlg, MyVector * rv, MyVector * sv, MyVector * tv)
 {
-  	*rv = Vector(0., 0., 0.);
+  	*rv = MyVector(0., 0., 0.);
     SetDlgItemDouble (hwndDlg, DL_ROTATION_X, rv->GetX());
     SetDlgItemDouble (hwndDlg, DL_ROTATION_Y, rv->GetY());
     SetDlgItemDouble (hwndDlg, DL_ROTATION_Z, rv->GetZ());
 
-  	*sv = Vector(1., 1., 1.);
+  	*sv = MyVector(1., 1., 1.);
     SetDlgItemDouble (hwndDlg, DL_SCALING_X, sv->GetX());
     SetDlgItemDouble (hwndDlg, DL_SCALING_Y, sv->GetY());
     SetDlgItemDouble (hwndDlg, DL_SCALING_Z, sv->GetZ());
 
-  	*tv = Vector(0., 0., 0.);
+  	*tv = MyVector(0., 0., 0.);
     SetDlgItemDouble (hwndDlg, DL_TRANSLATION_X, tv->GetX());
     SetDlgItemDouble (hwndDlg, DL_TRANSLATION_Y, tv->GetY());
     SetDlgItemDouble (hwndDlg, DL_TRANSLATION_Z, tv->GetZ());

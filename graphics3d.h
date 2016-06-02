@@ -13,12 +13,6 @@ using namespace std;
 #define SCALING     	2
 #define TRANSLATION 	3
 
-/**********************************************************
- *
- * classe DEV_COLOR
- *
- *********************************************************/
-
 struct DEV_COLOR {
   	int r, g, b;		// 0..255
   	DEV_COLOR (int rr = 0, int gg = 0, int bb = 0) :

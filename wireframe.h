@@ -18,7 +18,7 @@
  * 21/05/2012	wireframe.cpp
  * 21/05/2012	Matrix4.cpp
  * 21/05/2012	renderer.cpp
- * 21/05/2012	Matrix.cpp
+ * 21/05/2012	MyMatrix.cpp
  * 23/05/2012	ObjectCell.h / .cpp / .o
  *
  ********************************************************************************
@@ -30,7 +30,7 @@
  ********************************************************************************/
 #include <windows.h>
 
-#include "Vector.h"
+#include "MyVector.h"
 #include "ViewPointRec.h"
 
 // version
@@ -52,7 +52,7 @@
 
 int WireframeFunction (int, HWND, WPARAM, LPARAM);
 INT_PTR CALLBACK TransformationDlgProc (HWND, UINT, WPARAM, LPARAM);		//?? FROM BOOL TO INT_PTR
-void InitTransformationDlg(HWND, Vector *, Vector *, Vector *);
+void InitTransformationDlg(HWND, MyVector *, MyVector *, MyVector *);
 INT_PTR CALLBACK ViewRefPointDlgProc (HWND, UINT, WPARAM, LPARAM);			//?? FROM BOOL TO INT_PTR
 void InitViewRefPointDlg(HWND, ViewPointRec *);
 INT_PTR CALLBACK AboutBoxDlgProc (HWND, UINT, WPARAM, LPARAM);				//?? FROM BOOL TO INT_PTR

@@ -9,22 +9,22 @@ using namespace std;
 
 /**********************************************************
  *
- * classe Matrix
+ * classe MyMatrix
  *
  *********************************************************/
 
-class Matrix {
+class MyMatrix {
 private:
 	int nbLignes;
 	int nbColonnes;
 	double matrix[MATRIX_SIZE][MATRIX_SIZE];
 
 public:
-	Matrix();
-	Matrix (const Matrix & m);		// constructeur de recopie
-	~Matrix();						// destructeur
+	MyMatrix();
+	MyMatrix (const MyMatrix & m);		// constructeur de recopie
+	~MyMatrix();						// destructeur
 
-    friend Matrix operator * (Matrix m1, Matrix m2);
+    friend MyMatrix operator * (MyMatrix m1, MyMatrix m2);
 
 	void Zero();
 	void Identity();
@@ -41,6 +41,6 @@ public:
 	}
 };
 
-ostream& operator << (ostream &os, const Matrix &m);
+ostream& operator << (ostream &os, const MyMatrix &m);
 
 #endif   // MATRIX_H

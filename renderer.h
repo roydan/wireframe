@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "ObjectCell.h"
-#include "Vector.h"
+#include "MyVector.h"
 
 /**********************************************************
  *
@@ -16,7 +16,7 @@
 class EdgeBox {
 public:
   	double x, z, i;
-  	Vector w;
+  	MyVector w;
   	EdgeBox * next;
 };
 
@@ -26,8 +26,8 @@ void RenderObject (ObjectCell *);
 void RenderPolygon (PolygonCell *);
 void AddEdgeToList (VertexCell *, VertexCell *);
 void RenderSpan (int, EdgeBox **, EdgeBox **);
-void RenderPixel (int, int, double, Vector);
-double woodGrain (Vector);
+void RenderPixel (int, int, double, MyVector);
+double woodGrain (MyVector);
 double arcTangent (double, double);
 
 #endif   // RENDERER_H

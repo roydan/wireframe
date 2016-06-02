@@ -9,7 +9,7 @@
 #include "wireframe.h"
 #include "Util.h"
 #include "wireframe_app.h"
-#include "ViewPointRec.h"
+// #include "ViewPointRec.h"
 
 const double NSF = 30.0;			// Normal Scale Factor
 
@@ -20,14 +20,14 @@ const double HIGH_DOUBLE = 1.E30;
 #define AXIS_BLUE	2
 
 /**********************************************************
- * ObjectScene
  * 
- * constructeur
+ * ObjectScene
  * 
  * parameters IN:
  * 	HWND hWnd
  * 
  * return value : ObjectScene *
+ * 
  *********************************************************/
 ObjectScene::ObjectScene (HWND hWnd) {
   	RECT rect;
@@ -49,43 +49,37 @@ ObjectScene::ObjectScene (HWND hWnd) {
 
     sceneChanged = false;
 
-  	objectHead.clear();
+  	objectCellList.clear();
 
     objectFile = NULL;
     sceneFile = NULL;
 }
 
 /**********************************************************
+ * 
  * SetViewVariables
  * 
- * parameters IN : none
- * 
- * return value : none
  *********************************************************/
 void ObjectScene::SetViewVariables() {
   	viewRefPoint.SetViewVariables (viewTransformation);
 }
 
 /**********************************************************
+ * 
  * SetViewTransformation
  * 
- * private
- * 
- * parameters IN : none
- * 
- * return value : none
  *********************************************************/
 void ObjectScene::SetViewTransformation() {
   	viewRefPoint.SetViewTransformation (viewTransformation);
 }
 
 /**********************************************************
+ * 
  * WireFrameScene
  * 
  * parameters IN :
  *	HWND hWnd
  * 
- * return value : none
  *********************************************************/
 void ObjectScene::WireFrameScene (HWND hWnd) {
   	DEV_COLOR wireColor = DEV_COLOR (0, 180, 130);
@@ -96,17 +90,14 @@ void ObjectScene::WireFrameScene (HWND hWnd) {
 
 	//?? DevClearScreen();
 
-  	ObjectCell * currentObject;
-	for (vector<ObjectCell *>::iterator it = objectHead.begin(); it != objectHead.end(); ++it) {
-		currentObject = *it;
+	for (vector<ObjectCell *>::iterator it = objectCellList.begin(); it != objectCellList.end(); ++it) {
+		ObjectCell * currentObject = *it;
   	  	switch (currentObject->type) {
 
   	  	  	case OBJECT_AXIS:
             {
 				int index = 0;
-				VertexCell * vertex;
-				for (vector<VertexCell *>::iterator it = currentObject->vertexHead.begin(); it != currentObject->vertexHead.end(); ++it, ++index) {
-
+				for (vector<VertexCell *>::iterator it = currentObject->vertexCellList.begin(); it != currentObject->vertexCellList.end(); ++it, ++index) {
   	  	  	  	  	switch (index) {
   	  	  	  	  	  	case AXIS_RED:
 							hPen = CreatePen (PS_SOLID, 0, RGB (255,0,0));
@@ -127,13 +118,13 @@ void ObjectScene::WireFrameScene (HWND hWnd) {
 					hPenOld = (HPEN) SelectObject (hDC, hPen);
 
 					// first point
-					vertex = *it;
-					MoveToEx (hDC, vertex->screenPos.GetX(), vertex->screenPos.GetY(), NULL);
+					VertexCell * currentVertex = *it;
+					MoveToEx (hDC, currentVertex->screenPos.GetX(), currentVertex->screenPos.GetY(), NULL);
 
 					// second point
 					++it;
-					vertex = *it;
-					LineTo (hDC, vertex->screenPos.GetX(), vertex->screenPos.GetY());
+					currentVertex = *it;
+					LineTo (hDC, currentVertex->screenPos.GetX(), currentVertex->screenPos.GetY());
 
 					SelectObject (hDC, hPenOld);
 					DeleteObject (hPen);
@@ -143,20 +134,18 @@ void ObjectScene::WireFrameScene (HWND hWnd) {
 
   	  	  	case OBJECT_SURFACE:
             {
-  				SurfaceCell * currentSurface;
-                for (vector<SurfaceCell *>::iterator it = currentObject->surfaceHead.begin(); it != currentObject->surfaceHead.end(); ++it) {
-  	  	  	  	    currentSurface = *it;
+                for (vector<SurfaceCell *>::iterator it = currentObject->surfaceCellList.begin(); it != currentObject->surfaceCellList.end(); ++it) {
+  	  	  	  	    SurfaceCell * currentSurface = *it;
                     
-  					PolygonCell * currentPolygon;
-                    for (vector<PolygonCell *>::iterator it = currentSurface->polygonHead.begin(); it != currentSurface->polygonHead.end(); ++it) {
-  	  	  	  	        currentPolygon = *it;
+                    for (vector<PolygonCell *>::iterator it = currentSurface->polygonCellList.begin(); it != currentSurface->polygonCellList.end(); ++it) {
+  	  	  	  	        PolygonCell * currentPolygon = *it;
 
   	  	  	  	  	  	if (currentPolygon->polyVisible) {
-							//?? hPen = CreatePen (PS_SOLID, 0, RGB (wireColor.r, wireColor.g, wireColor.b));
+							// use currentObject->devColor instead of wireColor
 							hPen = CreatePen (PS_SOLID, 0, RGB (currentObject->devColor.r, currentObject->devColor.g, currentObject->devColor.b));
 							hPenOld = (HPEN) SelectObject (hDC, hPen);
 
-                            VertexList *  vertexList = currentPolygon->vertexListHead;
+                            VertexList * vertexList = currentPolygon->vertexListHead;
 							ScreenRec startPos = vertexList->vertex->screenPos;
 							MoveToEx (hDC, startPos.GetX(), startPos.GetY(), NULL);
 
@@ -176,18 +165,18 @@ void ObjectScene::WireFrameScene (HWND hWnd) {
 								hPen = CreatePen (PS_SOLID, 0, RGB (normalColor.r, normalColor.g, normalColor.b));
 								hPenOld = (HPEN) SelectObject (hDC, hPen);
 
-  	  	  	  	  	  	  	  	VertexList *  vertexList = currentPolygon->vertexListHead;
+  	  	  	  	  	  	  	  	VertexList * vertexList = currentPolygon->vertexListHead;
 								while (vertexList != NULL) {
   									VertexCell * currentVertex = vertexList->vertex;
 
 									MoveToEx (hDC, currentVertex->screenPos.GetX(), currentVertex->screenPos.GetY(), NULL);
 
-  	                                Vector tw;
+  	                                MyVector tw;
   	  	  	  	  	  	  	    	tw.SetX (currentVertex->worldPos.GetX() + (NSF * currentVertex->vertexNormal.GetX()));
   	  	  	  	  	  	  	    	tw.SetY (currentVertex->worldPos.GetY() + (NSF * currentVertex->vertexNormal.GetY()));
   	  	  	  	  	  	  	    	tw.SetZ (currentVertex->worldPos.GetZ() + (NSF * currentVertex->vertexNormal.GetZ()));
 
-  	                                Vector ts;
+  	                                MyVector ts;
   	  	  	  	  	  	  	    	ts.VectorMatrix (tw, viewTransformation);
 
   	                                ScreenRec tPos;
@@ -197,6 +186,7 @@ void ObjectScene::WireFrameScene (HWND hWnd) {
 
 								    vertexList = vertexList->next;
   	  	  	  	  	  	  	  	}
+  	  	  	  	  	  	  	  	
 								SelectObject (hDC, hPenOld);
 								DeleteObject (hPen);
   	  	  	  	  	  	  	}
@@ -208,6 +198,7 @@ void ObjectScene::WireFrameScene (HWND hWnd) {
 
   	  	  	case OBJECT_PATCH:
             {
+            	// TODO
             }
   	  	  	break;
   	  	}
@@ -215,17 +206,15 @@ void ObjectScene::WireFrameScene (HWND hWnd) {
 }
 
 /**********************************************************
+ * 
  * TransformScene
  * 
- * parameters IN : none
- * 
- * return value : none
  *********************************************************/
 void ObjectScene::TransformScene() {
   	zParams = ZParamRec (HIGH_DOUBLE, -HIGH_DOUBLE, 0.);
 
   	ObjectCell * currentObject;
-	for (vector<ObjectCell *>::iterator it = objectHead.begin(); it != objectHead.end(); ++it) {
+	for (vector<ObjectCell *>::iterator it = objectCellList.begin(); it != objectCellList.end(); ++it) {
 		currentObject = *it;
   	  	currentObject->TransformToWorldCoordinates();
   	  	currentObject->CalculateNormals();
@@ -239,44 +228,35 @@ void ObjectScene::TransformScene() {
 }
 
 /**********************************************************
+ * 
  * CalculateScreenCoordinates
  * 
- * private
- * 
- * parameters IN : none
- * 
- * return value : none
  *********************************************************/
 void ObjectScene::CalculateScreenCoordinates() {
-  	ObjectCell * currentObject;
-	for (vector<ObjectCell *>::iterator it = objectHead.begin(); it != objectHead.end(); ++it) {
-		currentObject = *it;
+	for (vector<ObjectCell *>::iterator it = objectCellList.begin(); it != objectCellList.end(); ++it) {
+		ObjectCell * currentObject = *it;
   	  	switch (currentObject->type) {
 
   	  	  	case OBJECT_AXIS:
             {
-  				VertexCell * vertex;
-				for (vector<VertexCell *>::iterator it = currentObject->vertexHead.begin(); it != currentObject->vertexHead.end(); ++it) {
-					vertex = *it;
-					vertex->screenPos.Perspective (vertex->eyePos, viewRefPoint, mapOffsets);
-					vertex->screenPos.SetZ ((int)((vertex->eyePos.GetZ() - zParams.GetZMin()) / zParams.GetZRange() * DEV_MAX_Z_RES));
+				for (vector<VertexCell *>::iterator it = currentObject->vertexCellList.begin(); it != currentObject->vertexCellList.end(); ++it) {
+					VertexCell * currentVertex = *it;
+					currentVertex->screenPos.Perspective (currentVertex->eyePos, viewRefPoint, mapOffsets);
+					currentVertex->screenPos.SetZ ((int)((currentVertex->eyePos.GetZ() - zParams.GetZMin()) / zParams.GetZRange() * DEV_MAX_Z_RES));
   	  	  	  	}
             }
   	  	  	break;
 
   	  	  	case OBJECT_SURFACE:
             {
-  				SurfaceCell * currentSurface;
-                for (vector<SurfaceCell *>::iterator it = currentObject->surfaceHead.begin(); it != currentObject->surfaceHead.end(); ++it) {
-  	  	  	  	    currentSurface = *it;
+                for (vector<SurfaceCell *>::iterator it = currentObject->surfaceCellList.begin(); it != currentObject->surfaceCellList.end(); ++it) {
+  	  	  	  	    SurfaceCell * currentSurface = *it;
 
-  					PolygonCell * currentPolygon;
-                    for (vector<PolygonCell *>::iterator it = currentSurface->polygonHead.begin(); it != currentSurface->polygonHead.end(); ++it) {
-  	  	  	  	        currentPolygon = *it;
+                    for (vector<PolygonCell *>::iterator it = currentSurface->polygonCellList.begin(); it != currentSurface->polygonCellList.end(); ++it) {
+  	  	  	  	        PolygonCell * currentPolygon = *it;
 
-  						VertexList *  vertexList;
   	  	  	  	  	  	if (currentPolygon->polyVisible) {
-  	  	  	  	  	  	  	vertexList = currentPolygon->vertexListHead;
+  							VertexList * vertexList = currentPolygon->vertexListHead;
   	  	  	  	  	  	  	while (vertexList != NULL) {
   								VertexCell * currentVertex = vertexList->vertex;
 								currentVertex->screenPos.Perspective (currentVertex->eyePos, viewRefPoint, mapOffsets);
@@ -291,6 +271,7 @@ void ObjectScene::CalculateScreenCoordinates() {
 
   	  	  	case OBJECT_PATCH:
             {
+            	// TODO
             }
   	  	  	break;
   	  	}
@@ -298,7 +279,9 @@ void ObjectScene::CalculateScreenCoordinates() {
 }
 
 /**********************************************************
+ * 
  * scene file
+ * 
  **********************************************************
  * 
  * 						viewing information
@@ -311,7 +294,7 @@ void ObjectScene::CalculateScreenCoordinates() {
  *  4						no. of objects
  *  1						object id
  *  cube.obj				object data filename
- * 						object transformations	Matrix transformation
+ * 						object transformations	MyMatrix transformation
  *  0.4 0.4 0.4		  	  scale vector
  *  0.0 0.0 0.0		  	  rotate vector
  *  0.5 1.7 -0.6		  	  translate vector
@@ -328,6 +311,7 @@ void ObjectScene::CalculateScreenCoordinates() {
  *  object transformations / scale / rotate / translate
  * 
  **********************************************************
+ * 
  * LoadScene
  * 
  * parameters IN :
@@ -336,6 +320,7 @@ void ObjectScene::CalculateScreenCoordinates() {
  *	char * sceneName
  * 
  * return value : bool
+ * 
  *********************************************************/
 bool ObjectScene::LoadScene (HWND hWnd, char * fileName, char * sceneName) {
   	sceneFile = fopen (fileName, "r");
@@ -371,13 +356,13 @@ bool ObjectScene::LoadScene (HWND hWnd, char * fileName, char * sceneName) {
   	    fscanf (sceneFile, "%s\n", &fileNameObject);
 
   	    fscanf (sceneFile, "%lf %lf %lf\n", &tempX, &tempY, &tempZ);
-  	    Vector scale (tempX, tempY, tempZ);
+  	    MyVector scale (tempX, tempY, tempZ);
 
   	    fscanf (sceneFile, "%lf %lf %lf\n", &tempX, &tempY, &tempZ);
-  	    Vector rotate (tempX, tempY, tempZ);
+  	    MyVector rotate (tempX, tempY, tempZ);
 
   	    fscanf (sceneFile, "%lf %lf %lf\n", &tempX, &tempY, &tempZ);
-  	    Vector translate (tempX, tempY, tempZ);
+  	    MyVector translate (tempX, tempY, tempZ);
 
   	    DEV_COLOR aColor_scn = DEV_COLOR();
   	    fscanf (sceneFile, "%d\n", &(aColor_scn.r));
@@ -389,7 +374,7 @@ bool ObjectScene::LoadScene (HWND hWnd, char * fileName, char * sceneName) {
             // load an object
   	  	  	if (LoadObjectExt (fileNameObject, fileNameObject) == false) {
 
-  		       ObjectCell * currentObject = objectHead [i];
+  		       ObjectCell * currentObject = objectCellList [i];
 
                currentObject->GetTransformation (SCALING, scale);
                currentObject->GetTransformation (ROTATION, rotate);
@@ -417,8 +402,11 @@ bool ObjectScene::LoadScene (HWND hWnd, char * fileName, char * sceneName) {
 
 
 /**********************************************************
+ * 
  * object file
+ * 
  **********************************************************
+ * 
  * type
  * no_vertices
  * ReadVertices()
@@ -427,16 +415,17 @@ bool ObjectScene::LoadScene (HWND hWnd, char * fileName, char * sceneName) {
  * MakeSurfaces()
  * 		surface.id no_polygons
  * 		polygon.id no_vertices_in_polygon vertex.id
+ * 
  **********************************************************
+ * 
  * LoadObjectExt
  * 
- * public
- *
  * parameters IN :
  *	char * fileName
  *	char * objectName
  * 
  * return value : bool
+ * 
  *********************************************************/
 bool ObjectScene::LoadObjectExt (char * fileName, char * objectName) {
   	objectFile = fopen (fileName, "r");
@@ -444,7 +433,7 @@ bool ObjectScene::LoadObjectExt (char * fileName, char * objectName) {
 
   	ObjectCell * currentObject = new ObjectCell (this);
 
-  	currentObject->idNo = objectHead.size() + 1;
+  	currentObject->idNo = objectCellList.size() + 1;
   	cout << "currentObject->idNo= " << currentObject->idNo << endl;
 
   	currentObject->name = objectName;
@@ -470,23 +459,19 @@ bool ObjectScene::LoadObjectExt (char * fileName, char * objectName) {
 	// default transformation
   	currentObject->transformation.Identity();
 
-  	objectHead.push_back (currentObject);              // add to end of vector
+  	objectCellList.push_back (currentObject);              // add to end of vector
 
   	fclose (objectFile);
   	return false;
 }
 
 /**********************************************************
- * PRIVATE
- *********************************************************/
-
-/**********************************************************
+ * 
  * MakeSurfacesExt
  * 
  * parameters IN :
  *	ObjectCell * currentObject
  * 
- * return value : none
  *********************************************************/
 void ObjectScene::MakeSurfacesExt (ObjectCell * currentObject)
 {
@@ -501,11 +486,11 @@ void ObjectScene::MakeSurfacesExt (ObjectCell * currentObject)
             // nouvelle surface
 			currId = surfaceId;
  			currentSurface = new SurfaceCell;
- 	  		currentObject->surfaceHead.push_back (currentSurface);              // add to end of vector
+ 	  		currentObject->surfaceCellList.push_back (currentSurface);              // add to end of vector
 		}
 
   		PolygonCell * currentPolygon = new PolygonCell;
-	  	currentSurface->polygonHead.push_back (currentPolygon);              // add to end of vector
+	  	currentSurface->polygonCellList.push_back (currentPolygon);              // add to end of vector
 
         // read a polygon
 		ReadAPolygonExt (surfaceId, currentPolygon, currentObject);
@@ -516,6 +501,7 @@ void ObjectScene::MakeSurfacesExt (ObjectCell * currentObject)
 }
 
 /**********************************************************
+ * 
  * ReadAPolygonExt
  * 
  * parameters IN :
@@ -523,7 +509,6 @@ void ObjectScene::MakeSurfacesExt (ObjectCell * currentObject)
  *	PolygonCell * currentPolygon
  *	ObjectCell * currentObject
  * 
- * return value : none
  *********************************************************/
 void ObjectScene::ReadAPolygonExt (int surfaceId, PolygonCell * currentPolygon, ObjectCell * currentObject)
 {
@@ -563,8 +548,8 @@ void ObjectScene::ReadAPolygonExt (int surfaceId, PolygonCell * currentPolygon, 
 
   	  	  	  	tempVertex->polyListHead = NULL;
 
-  	  			currentObject->vertexHead.push_back (tempVertex);              // add to end of vector
-                //?? cout << "ReadAPolygon: add to vertexHead -> vertexAt[ (currentVertex= " << currentVertex << ") - 1 ]" << endl;
+  	  			currentObject->vertexCellList.push_back (tempVertex);              // add to end of vector
+                //?? cout << "ReadAPolygon: add to vertexCellList -> vertexAt[ (currentVertex= " << currentVertex << ") - 1 ]" << endl;
   	  	  	}
   	  	}
   	  	vertexList->vertex = currentObject->vertexAt[currentVertex - 1];
@@ -575,6 +560,7 @@ void ObjectScene::ReadAPolygonExt (int surfaceId, PolygonCell * currentPolygon, 
 }
 
 /**********************************************************
+ * 
  * AddPolygonToPolygonListExt
  * 
  * parameters IN :
@@ -582,6 +568,7 @@ void ObjectScene::ReadAPolygonExt (int surfaceId, PolygonCell * currentPolygon, 
  *	PolygonList ** polyList
  * 
  * return value : int
+ * 
  *********************************************************/
 int ObjectScene::AddPolygonToPolygonListExt (PolygonCell * currentPolygon, PolygonList ** polyList)
 {
@@ -598,12 +585,12 @@ int ObjectScene::AddPolygonToPolygonListExt (PolygonCell * currentPolygon, Polyg
 }
 
 /**********************************************************
+ * 
  * ReadVerticesExt
  * 
  * parameters IN :
  *	ObjectCell * currentObject
  * 
- * return value : none
  *********************************************************/
 void ObjectScene::ReadVerticesExt (ObjectCell * currentObject) {
   	int vertexId;
@@ -629,14 +616,15 @@ void ObjectScene::ReadVerticesExt (ObjectCell * currentObject) {
 		currentObject->vertexAt.push_back (currentVertex);
         //?? cout << "ReadVerticesExt: add to vertexAt[ " << currentObject->vertexAt.size() - 1 << " ]" << endl;
 
-		// add point to vertexHead
-		currentObject->vertexHead.push_back (currentVertex);
-    	//?? cout << "ReadVerticesExt: add to vertexHead -> vertexAt[] = " << currentVertex << endl;
+		// add point to vertexCellList
+		currentObject->vertexCellList.push_back (currentVertex);
+    	//?? cout << "ReadVerticesExt: add to vertexCellList -> vertexAt[] = " << currentVertex << endl;
 
-  	      currentObject->surfaceAt [currentObject->vertexHead.size() - 1] = 0;
-  	      //?? currentObject->surfaceAt [currentObject->vertexHead.size() - 1] = 0;
+  	      currentObject->surfaceAt [currentObject->vertexCellList.size() - 1] = 0;
+  	      //?? currentObject->surfaceAt [currentObject->vertexCellList.size() - 1] = 0;
 		
   	    fscanf (objectFile, "%d", &vertexId);
         //?? cout << "ReadVerticesExt: vertexId= " << vertexId << endl;
  	}
 }
+

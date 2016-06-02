@@ -2,18 +2,18 @@
 #include <iomanip>
 #include <ostream>
 
-#include "Matrix.h"
+#include "MyMatrix.h"
 
 /**********************************************************
- * Matrix
+ * MyMatrix
  * 
  * constructeur
  * 
  * parameters IN : none
  * 
- * return value : Matrix *
+ * return value : MyMatrix *
  *********************************************************/
-Matrix::Matrix() {
+MyMatrix::MyMatrix() {
 	nbLignes = MATRIX_SIZE;
     nbColonnes = MATRIX_SIZE;
 
@@ -22,16 +22,16 @@ Matrix::Matrix() {
 }
 
 /**********************************************************
- * Matrix
+ * MyMatrix
  * 
  * constructeur de recopie
  * 
  * parameters IN :
- *	const Matrix & m
+ *	const MyMatrix & m
  * 
- * return value : Matrix *
+ * return value : MyMatrix *
  *********************************************************/
-Matrix::Matrix (const Matrix & m) {
+MyMatrix::MyMatrix (const MyMatrix & m) {
     nbLignes = m.nbLignes;
     nbColonnes = m.nbColonnes;
 
@@ -43,7 +43,7 @@ Matrix::Matrix (const Matrix & m) {
 }
 
 /**********************************************************
- * ~Matrix
+ * ~MyMatrix
  * 
  * destructeur
  * 
@@ -51,7 +51,7 @@ Matrix::Matrix (const Matrix & m) {
  * 
  * return value : none
  *********************************************************/
-Matrix::~Matrix() {
+MyMatrix::~MyMatrix() {
 }
 
 /**********************************************************
@@ -61,13 +61,13 @@ Matrix::~Matrix() {
  * fonction amie (friend)
  * 
  * parameters IN :
- *	Matrix m1
- *	Matrix m2
+ *	MyMatrix m1
+ *	MyMatrix m2
  * 
- * return value : Matrix
+ * return value : MyMatrix
  *********************************************************/
-Matrix operator * (Matrix m1, Matrix m2) {
-	Matrix m3;
+MyMatrix operator * (MyMatrix m1, MyMatrix m2) {
+	MyMatrix m3;
   	m3.Zero();
 
   	for (int i = 0; i < MATRIX_SIZE; i++) {
@@ -89,7 +89,7 @@ Matrix operator * (Matrix m1, Matrix m2) {
  * 
  * return value : none
  *********************************************************/
-void Matrix::Zero() {
+void MyMatrix::Zero() {
   	for (int i = 0; i < nbLignes; i++) {
   	  	for (int j = 0; j < nbColonnes; j++) {
   	    	matrix[i][j] = 0.;
@@ -104,7 +104,7 @@ void Matrix::Zero() {
  * 
  * return value : none
  *********************************************************/
-void Matrix::Identity() {
+void MyMatrix::Identity() {
   	Zero();
   	for (int diag = 0; diag < MATRIX_SIZE; diag++) {
   	  	matrix[diag][diag] = 1.0;
@@ -120,7 +120,7 @@ void Matrix::Identity() {
  * 
  * return value : double
  *********************************************************/
-double Matrix::GetValue (int row, int col) {
+double MyMatrix::GetValue (int row, int col) {
 	return matrix[row][col];
 }
 
@@ -134,7 +134,7 @@ double Matrix::GetValue (int row, int col) {
  * 
  * return value : none
  *********************************************************/
-void Matrix::SetValue (int row, int col, double value) {
+void MyMatrix::SetValue (int row, int col, double value) {
 	matrix[row][col] = value;
 }
 
@@ -143,11 +143,11 @@ void Matrix::SetValue (int row, int col, double value) {
  * 
  * parameters IN :
  *	ostream &os
- *	const Matrix &m
+ *	const MyMatrix &m
  * 
  * return value : ostream &
  *********************************************************/
-ostream& operator << (ostream & os, const Matrix & m) {
+ostream& operator << (ostream & os, const MyMatrix & m) {
 	//?? os << setprecision (8) << setiosflags (ios::right | ios::showpoint);
   	for (int i = 0; i < MATRIX_SIZE; i++) {
   	  	for (int j = 0; j < MATRIX_SIZE; j++) {

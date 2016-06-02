@@ -1,30 +1,29 @@
 #ifndef VECTOR_H
 #define VECTOR_H
 
-#include "Matrix.h"
+#include "MyMatrix.h"
 
 using namespace std;
 
 /**********************************************************
  *
- * classe Vector
- *
- * structure pour la representation d'un vecteur 3D
+ * vecteur 3D
  *
  *********************************************************/
 
-class Vector {
+class MyVector {
 private:
   	double x, y, z;
 
 public:
-	Vector (double x = 0., double y = 0., double z = 0.);
-	Vector (const Vector & v);
+	MyVector (double x = 0., double y = 0., double z = 0.);
+	MyVector (const MyVector & v);
 
-	double DotProduct (const Vector & v);
+	double DotProduct (const MyVector & v);
 	void Normalize();
 	double Magnitude();
-	void VectorMatrix (const Vector &, Matrix);
+	void VectorMatrix (const MyVector &, MyMatrix);
+	void VectorMatrix (MyMatrix);
 	
 	double GetX() const { return x; }
 	double GetY() const { return y; }
@@ -34,6 +33,6 @@ public:
 	void SetZ (double value) { z = value; }
 };
 
-ostream& operator << (ostream &os, const Vector &v);
+ostream& operator << (ostream &os, const MyVector &v);
 
 #endif   // VECTOR_H

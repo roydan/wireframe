@@ -9,7 +9,7 @@
 #include "ObjectCell.h"
 #include "MapRec.h"
 #include "ViewPointRec.h"
-#include "Matrix.h"
+#include "MyMatrix.h"
 #include "ZParamRec.h"
 
 using namespace std;
@@ -37,9 +37,9 @@ private:
 
 public:
     MapRec	     mapOffsets;
-    Matrix       viewTransformation;
+    MyMatrix     viewTransformation;
     ViewPointRec viewRefPoint;
-	vector<ObjectCell *> objectHead;
+	vector<ObjectCell *> objectCellList;
     bool         drawVertexNormals;
     ZParamRec    zParams;
     bool         sceneChanged;
@@ -54,3 +54,4 @@ public:
 };
 
 #endif   // OBJECT_SCENE_H
+

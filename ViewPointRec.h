@@ -1,7 +1,7 @@
 #ifndef VIEW_POINT_REC_H
 #define VIEW_POINT_REC_H
 
-#include "Matrix.h"
+#include "MyMatrix.h"
 
 using namespace std;
 
@@ -24,8 +24,8 @@ public:
     ViewPointRec (int viewPlaneDist = 1000, int rho = 5000, int theta = 45, int phi = 45);
     void operator = (const ViewPointRec& another);
 
-    void SetViewVariables (Matrix & viewTransformation);
-    void SetViewTransformation (Matrix & viewTransformation);
+    void SetViewVariables (MyMatrix & viewTransformation);
+    void SetViewTransformation (MyMatrix & viewTransformation);
 
     double GetXView() { return xView; }
     double GetYView() { return yView; }

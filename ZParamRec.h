@@ -4,15 +4,9 @@
 using namespace std;
 
 // monitor resolution
-const int DEV_MAX_X_RES = 1024;		// monitor X resolution
-const int DEV_MAX_Y_RES = 1024;		// monitor Y resolution
+const int DEV_MAX_X_RES = 1023;		// monitor X resolution (-1)
+const int DEV_MAX_Y_RES = 1023;		// monitor Y resolution (-1)
 const int DEV_MAX_Z_RES = 255;		// Frame buffer bit-depth; used during rendering
-
-/**********************************************************
- *
- * classe ZParamRec
- *
- *********************************************************/
 
 class ZParamRec {
 private:
@@ -20,7 +14,7 @@ private:
   	
 public:
 	ZParamRec (double zMin = 0., double zMax = 0., double zRange = 0.);
-    void operator = (const ZParamRec& another);
+    void operator = (const ZParamRec & another);
 
   	double GetZMin() { return zMin; }
     double GetZMax() { return zMax; }

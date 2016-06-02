@@ -6,7 +6,7 @@
 #include <iomanip>
 
 #include "renderer.h"
-#include "Vector.h"
+#include "MyVector.h"
 #include "graphics3d.h"
 #include "ObjectCell.h"
 #include "ZParamRec.h"
@@ -21,30 +21,30 @@
 BOOL TextureMapping = TRUE;
 
 HWND   ghWnd;
-EdgeBox * edgeListAt[DEV_MAX_Y_RES];
-int    zBufferAt[DEV_MAX_X_RES][DEV_MAX_Y_RES];
-Vector lightVector;
+EdgeBox * edgeListAt[DEV_MAX_Y_RES + 1];
+int    zBufferAt[DEV_MAX_X_RES + 1][DEV_MAX_Y_RES + 1];
+MyVector lightVector;
 
 /**********************************************************
  * RenderScene
  * 
  * parameters IN:
  * 	HWND hWnd
- *	vector<ObjectCell *> objectHead
+ *	vector<ObjectCell *> objectCellList
  * 
  * return value : none
  *********************************************************/
-void RenderScene (HWND hWnd, vector<ObjectCell *> objectHead) {
+void RenderScene (HWND hWnd, vector<ObjectCell *> objectCellList) {
   	ghWnd = hWnd;
 
   	initializeZBuffer();
 
-  	Vector lightVector(2, -3, 2);
+  	MyVector lightVector(2, -3, 2);
 
   	lightVector.Normalize();
 
   	ObjectCell * currentObject;
-    for (vector<ObjectCell *>::iterator it = objectHead.begin(); it != objectHead.end(); ++it) {
+    for (vector<ObjectCell *>::iterator it = objectCellList.begin(); it != objectCellList.end(); ++it) {
 	    currentObject = *it;
 		RenderObject (currentObject);
   	}
@@ -61,8 +61,8 @@ void initializeZBuffer()
 {
   	int x, y;
 
-  	for (x = 0; x < DEV_MAX_X_RES; x++) {
-  	  	for (y = 0; y < DEV_MAX_Y_RES; y++) {
+  	for (x = 0; x <= DEV_MAX_X_RES; x++) {
+  	  	for (y = 0; y <= DEV_MAX_Y_RES; y++) {
 		  	zBufferAt[x][y] = DEV_MAX_Z_RES;
 		}
 	}
@@ -79,11 +79,11 @@ void initializeZBuffer()
 void RenderObject (ObjectCell * currentObject)
 {
   	SurfaceCell * currentSurface;
-    for (vector<SurfaceCell *>::iterator it = currentObject->surfaceHead.begin(); it != currentObject->surfaceHead.end(); ++it) {
+    for (vector<SurfaceCell *>::iterator it = currentObject->surfaceCellList.begin(); it != currentObject->surfaceCellList.end(); ++it) {
   	    currentSurface = *it;
 
   	   PolygonCell * currentPolygon;
-       for (vector<PolygonCell *>::iterator it = currentSurface->polygonHead.begin(); it != currentSurface->polygonHead.end(); ++it) {
+       for (vector<PolygonCell *>::iterator it = currentSurface->polygonCellList.begin(); it != currentSurface->polygonCellList.end(); ++it) {
   	        currentPolygon = *it;
 
   	  	  	if (currentPolygon->polyVisible) {
@@ -105,7 +105,7 @@ void RenderPolygon (PolygonCell * currentPolygon)
 {
   	int y;
 
-  	for (y = 0; y < DEV_MAX_Y_RES; y++) {
+  	for (y = 0; y <= DEV_MAX_Y_RES; y++) {
 		edgeListAt[y] = NULL;
 	}
 
@@ -121,7 +121,7 @@ void RenderPolygon (PolygonCell * currentPolygon)
 
   	AddEdgeToList (vertex1->vertex, vertex0->vertex);
 
-  	for (y = 0; y < DEV_MAX_Y_RES; y++) {
+  	for (y = 0; y <= DEV_MAX_Y_RES; y++) {
 		if (edgeListAt[y] != NULL) {
 		  	RenderSpan (y, &edgeListAt[y], &edgeListAt[y]->next);
 		}
@@ -140,7 +140,7 @@ void RenderPolygon (PolygonCell * currentPolygon)
 void AddEdgeToList (VertexCell * vertex1, VertexCell * vertex2)
 {
   	VertexCell * tempVertex;
-  	Vector    dw;
+  	MyVector    dw;
   	EdgeBox * edgeBox;
 
   	if (vertex1->screenPos.GetY() > vertex2->screenPos.GetY()) {
@@ -158,7 +158,7 @@ void AddEdgeToList (VertexCell * vertex1, VertexCell * vertex2)
 		double currX = vertex1->screenPos.GetX();
 		double currZ = vertex1->screenPos.GetZ();
 		double currI = lightVector.DotProduct (vertex1->vertexNormal);
-		Vector currW = vertex1->worldPos;
+		MyVector currW = vertex1->worldPos;
 
 		double dx = (vertex2->screenPos.GetX() - currX) / dy;
 		double dz = (vertex2->screenPos.GetZ() - currZ) / dy;
@@ -205,7 +205,7 @@ void RenderSpan (int y, EdgeBox ** edgeBox1, EdgeBox ** edgeBox2)
   	EdgeBox * tempEdgeBox;
   	int       x, z;
   	double    dz, di;
-  	Vector    dw;
+  	MyVector    dw;
 
  	if ((*edgeBox1)->x > (*edgeBox2)->x) {
   	  	tempEdgeBox = *edgeBox1;
@@ -220,7 +220,7 @@ void RenderSpan (int y, EdgeBox ** edgeBox1, EdgeBox ** edgeBox2)
 
 		double currZ = (*edgeBox1)->z;
 		double currI = (*edgeBox1)->i;
-		Vector currW = (*edgeBox1)->w;
+		MyVector currW = (*edgeBox1)->w;
 
   	  	dz = ((*edgeBox2)->z - currZ) / dx;
   	  	di = ((*edgeBox2)->i - currI) / dx;
@@ -253,11 +253,11 @@ void RenderSpan (int y, EdgeBox ** edgeBox1, EdgeBox ** edgeBox2)
  * 	int x
  *	int y
  *	double i
- *	Vector w
+ *	MyVector w
  * 
  * return value : none
  *********************************************************/
-void RenderPixel (int x, int y, double i, Vector w)
+void RenderPixel (int x, int y, double i, MyVector w)
 {
   	DEV_COLOR c;
   	HPEN hPen, hPenOld;
@@ -297,11 +297,11 @@ void RenderPixel (int x, int y, double i, Vector w)
  * woodGrain
  * 
  * parameters IN:
- * 	Vector w
+ * 	MyVector w
  * 
  * return value : double
  *********************************************************/
-double woodGrain (Vector w)
+double woodGrain (MyVector w)
 {
   	double ang;
 

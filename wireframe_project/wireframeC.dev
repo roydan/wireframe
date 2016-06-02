@@ -35,11 +35,11 @@ LogOutputEnabled=0
 Major=1
 Minor=2
 Release=0
-Build=784
+Build=816
 LanguageID=1033
 CharsetID=1252
 CompanyName=
-FileVersion=1.2.0.784
+FileVersion=1.2.0.816
 FileDescription=Developed using the Dev-C++ IDE
 InternalName=
 LegalCopyright=
@@ -60,7 +60,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit2]
-FileName=..\Matrix.cpp
+FileName=..\MyMatrix.cpp
 CompileCpp=1
 Folder=wireframeC
 Compile=1
@@ -70,7 +70,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit3]
-FileName=..\Matrix.h
+FileName=..\MyMatrix.h
 CompileCpp=1
 Folder=wireframeC
 Compile=1
@@ -230,7 +230,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit19]
-FileName=..\Vector.h
+FileName=..\MyVector.h
 CompileCpp=1
 Folder=wireframeC
 Compile=1
@@ -240,7 +240,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit20]
-FileName=..\Vector.cpp
+FileName=..\MyVector.cpp
 CompileCpp=1
 Folder=wireframeC
 Compile=1

@@ -43,11 +43,11 @@ void ViewPointRec::operator = (const ViewPointRec& another)
  * SetViewVariables
  * 
  * parameters IN :
- *	Matrix & viewTransformation
+ *	MyMatrix & viewTransformation
  * 
  * return value : none
  *********************************************************/
-void ViewPointRec::SetViewVariables (Matrix & viewTransformation) {
+void ViewPointRec::SetViewVariables (MyMatrix & viewTransformation) {
   	sinTheta = sin ( Util::InRadians (theta) );
   	cosTheta = cos ( Util::InRadians (theta) );
   	sinPhi = sin ( Util::InRadians (phi) );
@@ -63,11 +63,11 @@ void ViewPointRec::SetViewVariables (Matrix & viewTransformation) {
  * SetViewTransformation
  * 
  * parameters IN :
- *	Matrix & viewTransformation
+ *	MyMatrix & viewTransformation
  * 
  * return value : none
  *********************************************************/
-void ViewPointRec::SetViewTransformation (Matrix & viewTransformation) {
+void ViewPointRec::SetViewTransformation (MyMatrix & viewTransformation) {
   	viewTransformation.Identity();
 
   	viewTransformation[0][0] = -sinTheta;
