@@ -43,9 +43,8 @@ void RenderScene (HWND hWnd, vector<ObjectCell *> objectCellList) {
 
   	lightVector.Normalize();
 
-  	ObjectCell * currentObject;
     for (vector<ObjectCell *>::iterator it = objectCellList.begin(); it != objectCellList.end(); ++it) {
-	    currentObject = *it;
+	    ObjectCell * currentObject = *it;
 		RenderObject (currentObject);
   	}
 }
@@ -76,13 +75,11 @@ void initializeZBuffer()
  *********************************************************/
 void RenderObject (ObjectCell * currentObject)
 {
-  	SurfaceCell * currentSurface;
     for (vector<SurfaceCell *>::iterator it = currentObject->surfaceCellList.begin(); it != currentObject->surfaceCellList.end(); ++it) {
-  	    currentSurface = *it;
+  	    SurfaceCell * currentSurface = *it;
 
-  	   PolygonCell * currentPolygon;
-       for (vector<PolygonCell *>::iterator it = currentSurface->polygonCellList.begin(); it != currentSurface->polygonCellList.end(); ++it) {
-  	        currentPolygon = *it;
+       	for (vector<PolygonCell *>::iterator it = currentSurface->polygonCellList.begin(); it != currentSurface->polygonCellList.end(); ++it) {
+  	        PolygonCell * currentPolygon = *it;
 
   	  	  	if (currentPolygon->polyVisible) {
   	  	    	RenderPolygon (currentPolygon);
@@ -261,15 +258,10 @@ void RenderPixel (int x, int y, double i, MyVector w)
   	HPEN hPen, hPenOld;
   	HDC  hDC;
 
-   //?? cout << "RenderPixel. x= " << x << " , y= " << y << " , i= " << i << " , w= " << w << endl;
-
   	if (i < 0) {
   	  	i = Ka;
 	} else {
-  	  	i = Ka;
-  	  	/***********
   	  	i = Ka + (Kd * woodGrain (w));
-  	  	***********/
 	}
 
   	if (i > 1) i = 1;
@@ -278,17 +270,22 @@ void RenderPixel (int x, int y, double i, MyVector w)
   	c.g = (int)(i * Kg * DEV_MAX_Z_RES);
   	c.b = (int)(i * Kb * DEV_MAX_Z_RES);
 
-   //?? cout << "RenderPixel. i= " << i << " , c.r= " << c.r << " , c.g= " << c.g << " , c.b= " << c.b << endl;
-   
   	hDC = GetDC(ghWnd);
+
   	hPen = CreatePen (PS_SOLID, 0, RGB(c.r, c.g, c.b));
   	hPenOld = (HPEN) SelectObject (hDC, hPen);
 
-  	MoveToEx (hDC, x, y, NULL);
-  	LineTo (hDC, x + 1, y + 1);
+  	//?? MoveToEx (hDC, x-1, y-1, NULL);
+  	//?? LineTo (hDC, x, y);
 
+	// new color
+  	COLORREF newColor = RGB(c.r, c.g, c.b);
+  	
+  	SetPixel (hDC, x, y, newColor);
+  	
   	SelectObject (hDC, hPenOld);
   	DeleteObject (hPen);
+  	
 }
 
 /**********************************************************

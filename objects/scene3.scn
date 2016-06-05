@@ -1,16 +1,6 @@
-! view distance
-2000
-! rho
-2000
-! theta
-45
-! phi
-75
-! draw vertex normals
-0
-!
 ! object data filename
 carreau.obj
+!
 ! object transformations
 ! scale vector
 2 2 2
@@ -18,5 +8,8 @@ carreau.obj
 0 0 0
 ! translate vector
 -200 -200 0
+!
 ! object color
 0 0 0
+!
+! end-of-file

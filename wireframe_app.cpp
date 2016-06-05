@@ -191,7 +191,7 @@ LRESULT CALLBACK WndProc (HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam) {
 
   	  	  	  	case IDM_ABOUT:
 				{
-                     TestSub();       //??
+                    TestSub();       //??
                     
 					WireframeFunction (WIREFRAME_ABOUT, hWnd, 0, 0);
 				    return 0;
@@ -266,7 +266,7 @@ void DrawVertexNormalsCtrl (HWND hWnd) {
 static void TestSub (void) {
 	cout << "TestSub" << endl;
        
-	/**********************************
+	/**********************************/
 	MyMatrix m;
     cout << "cout << MyMatrix" << endl;
 	cout << m << endl;
@@ -281,8 +281,16 @@ static void TestSub (void) {
 	cout << m.GetValue (0,0) << endl;
 	cout << endl;
 	
-    cout << "m[0][0]" << endl;
-	cout << m[0][0] << endl;
+    cout << "GetValue (0,1)" << endl;
+	cout << m.GetValue (0,1) << endl;
+	cout << endl;
+	
+    cout << "m[1][1]" << endl;
+	cout << m[1][1] << endl;
+	cout << endl;
+	
+    cout << "m[0][1]" << endl;
+	cout << m[0][1] << endl;
 	cout << endl;
 	
     cout << "SetValue (0, 0, 2.34)" << endl;
@@ -290,7 +298,7 @@ static void TestSub (void) {
 	cout << m.GetValue (0,0) << endl;
 	cout << endl;
 
-    cout << "m[0][0]=1.23)" << endl;
+    cout << "m[0][0] = 1.23" << endl;
 	m[0][0] = 1.23;
 	cout << m[0][0] << endl;
 	cout << endl;
@@ -302,7 +310,7 @@ static void TestSub (void) {
 
     m.Identity();
     MyMatrix m2(m);
-    cout << "constructeur de recopie: MyMatrix m2(m.Identity())" << endl;
+    cout << "constructeur de recopie: m2(m.Identity())" << endl;
 	cout << m2 << endl;
 	cout << endl;
     
@@ -311,19 +319,25 @@ static void TestSub (void) {
 	m2[1][1] = 2.;
 	m2[2][2] = 2.;
 	m2[3][3] = 2.;
+    cout << "m2" << endl;
+	cout << m2 << endl;
+	cout << endl;
 
     MyMatrix m3;
     m3.Identity();
-	m3[0][0] = 2.;
-	m3[1][1] = 2.;
-	m3[2][2] = 2.;
-	m3[3][3] = 2.;
+	m3[0][0] = 3.;
+	m3[1][1] = 3.;
+	m3[2][2] = 3.;
+	m3[3][3] = 3.;
+    cout << "m3" << endl;
+	cout << m3 << endl;
+	cout << endl;
 
     cout << "m = m2 * m3" << endl;
     m = m2 * m3;
 	cout << m << endl;
 	cout << endl;
-	**********************************/
+	/**********************************/
 
 	/**********************************
     DemoXML();

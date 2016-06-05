@@ -49,8 +49,8 @@ public:
     void SetViewVariables();
 	void WireFrameScene (HWND);
 	void TransformScene();
-    bool LoadScene (HWND, char *, char *);
-    bool LoadObject (char *, char *);
+    bool LoadScene (HWND, char *);
+    bool LoadObject (char *);
 };
 
 #endif   // OBJECT_SCENE_H

@@ -5,6 +5,11 @@
 
 using namespace std;
 
+const int DEFAULT_VIEW_PLANE_DISTANCE = 1000;
+const int DEFAULT_RHO = 5000;
+const int DEFAULT_THETA = 45;
+const int DEFAULT_PHI = 75;
+
 /**********************************************************
  *
  * classe ViewPointRec
@@ -21,7 +26,12 @@ private:
   	int rho, theta, phi;
 
 public:
-    ViewPointRec (int viewPlaneDist = 1000, int rho = 5000, int theta = 45, int phi = 45);
+
+    ViewPointRec (int viewPlaneDist = DEFAULT_VIEW_PLANE_DISTANCE,
+					int rho = DEFAULT_RHO,
+					int theta = DEFAULT_THETA,
+					int phi = DEFAULT_PHI);
+					
     void operator = (const ViewPointRec& value);
 
     void SetViewVariables (MyMatrix & viewTransformation);
@@ -30,12 +40,6 @@ public:
     double GetXView() { return xView; }
     double GetYView() { return yView; }
     double GetZView() { return zView; }
-
-	/************
-    void SetXView (int value) { xView = value; }
-    void SetYView (int value) { yView = value; }
-    void SetZView (int value) { zView = value; }
-	************/
 
     int GetViewPlaneDist() { return viewPlaneDist; }
     int GetRho() { return rho; }

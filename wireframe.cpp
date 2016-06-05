@@ -95,14 +95,14 @@ int WireframeFunction (int iMsg, HWND hWnd, WPARAM wParam, LPARAM lParam) {
 			if (fileObject.PopFileOpen (hWnd, fileName, objectName)) {
                	if (strstr(objectName, ".obj") != NULL) {
                 	// load an object
-  	  	  			if (ptrScene->LoadObject (fileName, objectName) == false) {
+  	  	  			if (ptrScene->LoadObject (fileName) == false) {
   	  	    			ptrScene->sceneChanged = true;
 					} else {
 						return 1;
 					}
                	} else if (strstr(objectName, ".scn") != NULL) {
   	  		   	    // Load a scene
-  	  	  			if (ptrScene->LoadScene (hWnd, fileName, objectName) == false) {
+  	  	  			if (ptrScene->LoadScene (hWnd, fileName) == false) {
   	  	    		  	ptrScene->sceneChanged = true;
 					} else {
 					 	return 1;
@@ -124,14 +124,14 @@ int WireframeFunction (int iMsg, HWND hWnd, WPARAM wParam, LPARAM lParam) {
 			if (fileScene.PopFileOpen (hWnd, fileName, objectName)) {
                	if (strstr(objectName, ".scn") != NULL) {
   	  		   		// Load a scene
-  	  		   	    if (ptrScene->LoadScene (hWnd, fileName, objectName) == false) {
+  	  		   	    if (ptrScene->LoadScene (hWnd, fileName) == false) {
   	  	    			ptrScene->sceneChanged = true;
 					} else {
 						return 1;
 					}
                	} else if (strstr(objectName, ".obj") != NULL) {
                		// load an object
-  	  	  			if (ptrScene->LoadObject (fileName, objectName) == false) {
+  	  	  			if (ptrScene->LoadObject (fileName) == false) {
   	  	    			ptrScene->sceneChanged = true;
 					} else {
 						return 1;
@@ -155,14 +155,12 @@ int WireframeFunction (int iMsg, HWND hWnd, WPARAM wParam, LPARAM lParam) {
 
   	  	case WIREFRAME_RENDER_SCENE:
         {
-			/****************************
 			// Render Scene
 			if (ptrScene->objectCellList.size() > 0) {
 				RenderScene (hWnd, ptrScene->objectCellList);
 			} else {
   	  	    	MessageBox (NULL, "No objects currently loaded", NULL, MB_OK);
 			}
-			****************************/
         }
         break;
 
@@ -191,23 +189,19 @@ int WireframeFunction (int iMsg, HWND hWnd, WPARAM wParam, LPARAM lParam) {
   	  	case WIREFRAME_WM_DESTROY:
 		{
   	  	 	// store settings
-  	  	 	// TODO validate WritePrivateProfileInt
 			char str [MAX_STRING_LENGTH];
 			
 			sprintf (str, "%d", ptrScene->viewRefPoint.GetViewPlaneDist());
-  	  	 	WritePrivateProfileString ("VIEWING_INFORMATION", "ViewPlaneDistance", str, ".\\wireframe.ini");
+  	  	 	WritePrivateProfileString ("VIEWING_INFORMATION", "ViewPlaneDistance", str, "c:\\temp\\wireframe.ini");
 			
 			sprintf (str, "%d", ptrScene->viewRefPoint.GetRho());
-  	  	 	WritePrivateProfileString ("VIEWING_INFORMATION", "Rho", str, ".\\wireframe.ini");
+  	  	 	WritePrivateProfileString ("VIEWING_INFORMATION", "Rho", str, "c:\\temp\\wireframe.ini");
 			
 			sprintf (str, "%d", ptrScene->viewRefPoint.GetTheta());
-  	  	 	WritePrivateProfileString ("VIEWING_INFORMATION", "Theta", str, ".\\wireframe.ini");
+  	  	 	WritePrivateProfileString ("VIEWING_INFORMATION", "Theta", str, "c:\\temp\\wireframe.ini");
 			
 			sprintf (str, "%d", ptrScene->viewRefPoint.GetPhi());
-  	  	 	WritePrivateProfileString ("VIEWING_INFORMATION", "Phi", str, ".\\wireframe.ini");
-			
-			sprintf (str, "%d", (int)ptrScene->drawVertexNormals);
-  	  	 	WritePrivateProfileString ("VIEWING_INFORMATION", "DrawVertexNormals", str, ".\\wireframe.ini");
+  	  	 	WritePrivateProfileString ("VIEWING_INFORMATION", "Phi", str, "c:\\temp\\wireframe.ini");
 		}
   	  	break;
 
@@ -590,7 +584,10 @@ INT_PTR CALLBACK ViewRefPointDlgProc (HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
 
   	  	  		case IDC_PV_RESET:
                 {
-  	  	    		ptrScene->viewRefPoint = ViewPointRec (1000, 5000, 45, 75);
+  	  	    		ptrScene->viewRefPoint = ViewPointRec (DEFAULT_VIEW_PLANE_DISTANCE,
+															DEFAULT_RHO,
+															DEFAULT_THETA,
+															DEFAULT_PHI);
   	  	    		InitViewRefPointDlg(hwndDlg, &ptrScene->viewRefPoint);
   	  	    		ptrScene->SetViewVariables();
   	  	    		ptrScene->sceneChanged = true;

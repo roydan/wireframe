@@ -19,9 +19,6 @@ class PolygonList;			// declaration
  *
  * vertex
  *
- * TODO
- * convert polyListHead to vector<PolygonCell indexes>
- *
  *********************************************************/
 class VertexCell {
 public:
@@ -37,9 +34,6 @@ public:
  *
  * liste de pointeurs de vertex
  * 
- * TODO
- * convert to vector<VertexCell indexes>
- *
  *********************************************************/
 class VertexList {
 public:
@@ -50,9 +44,6 @@ public:
 /**********************************************************
  *
  * polygone
- *
- * TODO
- * convert vertexListHead to vector<VertexCell indexes>
  *
  *********************************************************/
 class PolygonCell {
@@ -65,9 +56,6 @@ public:
 /**********************************************************
  *
  * liste de pointeurs de polygone
- *
- * TODO
- * convert to vector<PolygonCell indexes>
  *
  *********************************************************/
 class PolygonList {
@@ -101,11 +89,12 @@ public:
   	vector<SurfaceCell *> surfaceCellList;
   	vector<VertexCell *>  vertexCellList;
   	MyMatrix      		  transformation;
-    vector<VertexCell *>  vertexAt;
-    int         surfaceAt[MAX_NO_OF_VERTICES];
 
   	DEV_COLOR 	devColor;
   	
+    vector<VertexCell *>  vertexAt;
+    int surfaceAt[MAX_NO_OF_VERTICES];
+    
   	ObjectCell (ObjectScene * ptrScene);
 
 	void CalculateEyeCoordinates();

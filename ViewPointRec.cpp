@@ -8,10 +8,10 @@
  * ViewPointRec
  * 
  * parameters IN:
- * 	int viewPlaneDist	default = 1000
- *	int rho				default = 5000
- *	int theta			default = 45
- *	int phi				default = 45
+ * 	int viewPlaneDist
+ *	int rho
+ *	int theta
+ *	int phi
  * 
  * return value : ViewPointRec *
  * 

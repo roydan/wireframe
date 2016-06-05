@@ -27,12 +27,6 @@ const double HIGH_DOUBLE = 1.E30;
  * 
  * return value : ObjectScene *
  * 
- *********************************************************
- * 
- * TODO
- * polygon number 1..last
- * surface number
- * 
  *********************************************************/
 ObjectScene::ObjectScene (HWND hWnd) {
   	RECT rect;
@@ -41,29 +35,27 @@ ObjectScene::ObjectScene (HWND hWnd) {
 	int yMid = (int)((rect.bottom - rect.top) / 2);
 	mapOffsets = MapRec (xMid, yMid);
 
-	// TODO validate GetPrivateProfileInt
-	
 	char strDefault [MAX_STRING_LENGTH];
 	char inBuf [MAX_STRING_LENGTH];
 	int intValue;
-			
-	sprintf (strDefault, "%d", 1000);
- 	GetPrivateProfileString ("VIEWING_INFORMATION", "ViewPlaneDistance", strDefault, inBuf, sizeof(inBuf), ".\\wireframe.ini");
+
+	sprintf (strDefault, "%d", DEFAULT_VIEW_PLANE_DISTANCE);
+ 	GetPrivateProfileString ("VIEWING_INFORMATION", "ViewPlaneDistance", strDefault, inBuf, sizeof(inBuf), "c:\\temp\\wireframe.ini");
   	sscanf (inBuf, "%d", &intValue);
   	int viewPlaneDist = intValue;
 
-	sprintf (strDefault, "%d", 5000);
- 	GetPrivateProfileString ("VIEWING_INFORMATION", "Rho", strDefault, inBuf, sizeof(inBuf), ".\\wireframe.ini");
+	sprintf (strDefault, "%d", DEFAULT_RHO);
+ 	GetPrivateProfileString ("VIEWING_INFORMATION", "Rho", strDefault, inBuf, sizeof(inBuf), "c:\\temp\\wireframe.ini");
   	sscanf (inBuf, "%d", &intValue);
   	int rho = intValue;
 
-	sprintf (strDefault, "%d", 45);
- 	GetPrivateProfileString ("VIEWING_INFORMATION", "Theta", strDefault, inBuf, sizeof(inBuf), ".\\wireframe.ini");
+	sprintf (strDefault, "%d", DEFAULT_THETA);
+ 	GetPrivateProfileString ("VIEWING_INFORMATION", "Theta", strDefault, inBuf, sizeof(inBuf), "c:\\temp\\wireframe.ini");
   	sscanf (inBuf, "%d", &intValue);
   	int theta = intValue;
 
-	sprintf (strDefault, "%d", 75);
- 	GetPrivateProfileString ("VIEWING_INFORMATION", "Phi", strDefault, inBuf, sizeof(inBuf), ".\\wireframe.ini");
+	sprintf (strDefault, "%d", DEFAULT_PHI);
+ 	GetPrivateProfileString ("VIEWING_INFORMATION", "Phi", strDefault, inBuf, sizeof(inBuf), "c:\\temp\\wireframe.ini");
   	sscanf (inBuf, "%d", &intValue);
   	int phi = intValue;
 
@@ -72,12 +64,7 @@ ObjectScene::ObjectScene (HWND hWnd) {
   	SetViewVariables();
 
   	// draw vertex normals
-	// TODO validate GetPrivateProfileInt
-
-	sprintf (strDefault, "%d", (int)false);
- 	GetPrivateProfileString ("VIEWING_INFORMATION", "DrawVertexNormals", strDefault, inBuf, sizeof(inBuf), ".\\wireframe.ini");
-  	sscanf (inBuf, "%d", &intValue);
-  	drawVertexNormals = (bool)intValue;
+  	drawVertexNormals = false;
 
     sceneChanged = false;
 
@@ -311,7 +298,6 @@ void ObjectScene::CalculateScreenCoordinates() {
  * parameters IN :
  *	HWND hWnd
  *	char * fileName
- *	char * sceneName
  * 
  * return value : bool
  *					true if error
@@ -341,12 +327,6 @@ void ObjectScene::CalculateScreenCoordinates() {
  * 
  * data structure for scene file (implemented)
  * 
- * view distance			ViewPointRec.viewPlaneDist
- * rho						ViewPointRec.rho
- * theta					ViewPointRec.theta
- * phi						ViewPointRec.phi
- * draw vertex normals		bool drawVertexNormals
- *
  * object data filename
  * object transformations	MyMatrix transformation
  * 		scale vector
@@ -356,7 +336,7 @@ void ObjectScene::CalculateScreenCoordinates() {
  *		rgb vector
  * 
  *********************************************************/
-bool ObjectScene::LoadScene (HWND hWnd, char * fileName, char * sceneName) {
+bool ObjectScene::LoadScene (HWND hWnd, char * fileName) {
   	FILE * sceneFile = fopen (fileName, "r");
   	if (sceneFile == NULL) return true;
 
@@ -365,37 +345,6 @@ bool ObjectScene::LoadScene (HWND hWnd, char * fileName, char * sceneName) {
     int intValue;
   	double tempX, tempY, tempZ;
 	
-	// viewing information
-	
-	if (getStringNoComments(sceneFile, mystring)) {
-	  	sscanf (mystring, "%d", &intValue);
-  		viewRefPoint.SetViewPlaneDist (intValue);
-	}
-		  	
-	if (getStringNoComments(sceneFile, mystring)) {
-	  	sscanf (mystring, "%d", &intValue);
-  		viewRefPoint.SetRho (intValue);
-	}
-		  	
-	if (getStringNoComments(sceneFile, mystring)) {
-	  	sscanf (mystring, "%d", &intValue);
-  		viewRefPoint.SetTheta (intValue);
-	}
-		  	
-	if (getStringNoComments(sceneFile, mystring)) {
-	  	sscanf (mystring, "%d", &intValue);
-  		viewRefPoint.SetPhi (intValue);
-	}
-	
-	if (getStringNoComments(sceneFile, mystring)) {
-	  	sscanf (mystring, "%d", &intValue);
-	  	drawVertexNormals = (bool)intValue;
-	}
-	
-    DrawVertexNormalsCtrl (hWnd);
-
-  	SetViewVariables();
-
     int i = 0;
 
 	bool found = false;
@@ -403,10 +352,12 @@ bool ObjectScene::LoadScene (HWND hWnd, char * fileName, char * sceneName) {
 		found = getStringNoComments(sceneFile, mystring);
 		if (found) {
 			
-			// object data
+			// object data filename
 
 		  	sscanf (mystring, "%s", &objectFilename);
 
+			// object transformations
+			
 		  	MyVector scale, rotate, translate;
 		  	
 			if (getStringNoComments(sceneFile, mystring)) {
@@ -424,7 +375,10 @@ bool ObjectScene::LoadScene (HWND hWnd, char * fileName, char * sceneName) {
 		  	    translate = MyVector (tempX, tempY, tempZ);
 	  		}
 	
+			// object color
+			
 	  	    DEV_COLOR aColor_scn = DEV_COLOR();
+	  	    
 			if (getStringNoComments(sceneFile, mystring)) {
 	  			sscanf (mystring, "%d %d %d", &aColor_scn.r, &aColor_scn.g, &aColor_scn.b);
 	  		}
@@ -432,20 +386,16 @@ bool ObjectScene::LoadScene (HWND hWnd, char * fileName, char * sceneName) {
             char * ptr = strstr(objectFilename, ".obj");
             if (ptr != NULL) {
 	            // load an object
-    			char objectName[MAX_STRING_LENGTH];
-    			int len = ptr - objectFilename;
-    			strncpy(objectName, objectFilename, len);
-    			objectName[len] = '\0';
-	            
-	  	  	  	if (LoadObject (objectFilename, objectName) == false) {
+	  	  	  	if (LoadObject (objectFilename) == false) {
 	  		    	ObjectCell * currentObject = objectCellList [i];
-	
+
+					// apply object transformations	
 	               	currentObject->GetTransformation (SCALING, scale);
 	               	currentObject->GetTransformation (ROTATION, rotate);
 	               	currentObject->GetTransformation (TRANSLATION, translate);
-	
+
+					// apply new object color if different than (0,0,0)
 	               	if (!((aColor_scn.r == 0) && (aColor_scn.g == 0) && (aColor_scn.b == 0))) {
-						// if (0,0,0) then use default
 	  	              	currentObject->devColor = aColor_scn;
 	               	}
 	
@@ -511,7 +461,6 @@ void ObjectScene::removeSpaces (char * s) {
  * 
  * parameters IN :
  *	char * fileName
- *	char * objectName
  * 
  * return value : bool
  *					true if fail
@@ -555,30 +504,53 @@ void ObjectScene::removeSpaces (char * s) {
  *		rgb vector
  *
  *********************************************************/
-bool ObjectScene::LoadObject (char * fileName, char * objectName) {
+bool ObjectScene::LoadObject (char * fileName) {
   	FILE * objectFile = fopen (fileName, "r");
   	if (objectFile == NULL) return true;
 
   	ObjectCell * currentObject = new ObjectCell (this);
 
-  	currentObject->name = objectName;
+	// retrieve object name from filename (remove .obj)
+	char objectName[MAX_STRING_LENGTH];
+    char * ptr = strstr(fileName, ".obj");
+    int len = ptr - fileName;
+    strncpy(objectName, fileName, len);
+    objectName[len] = '\0';
+
+	// remove path from object name
+    ptr = strstr(objectName, "\\");
+    if (ptr != NULL) {
+    	ptr = objectName + strlen(objectName);
+    	while (*ptr != '\\') {
+    		ptr--;
+		}
+		ptr++;
+	} else {
+		ptr = objectName;
+	}
+    	
+  	currentObject->name = ptr;
 
   	char mystring [MAX_STRING_LENGTH];
   	
-   	// read currentObject type
+   	// object type
 	if (getStringNoComments(objectFile, mystring)) {
 	  	sscanf (mystring, "%d", &(currentObject->type));
   	}
 
+ 	// object vertex information
   	ReadVertices (objectFile, currentObject);
 
+	// object polygon information
   	MakeSurfaces (objectFile, currentObject);
 
-   	// read color
+   	// object color
   	DEV_COLOR aColor = DEV_COLOR (0, 180, 130);
+  	
 	if (getStringNoComments(objectFile, mystring)) {
 		sscanf (mystring, "%d %d %d", &aColor.r, &aColor.g, &aColor.b);
 	}
+	
   	currentObject->devColor = aColor;
 
 	// default transformation
@@ -602,7 +574,7 @@ void ObjectScene::MakeSurfaces (FILE * ptrFile, ObjectCell * currentObject)
 {
     SurfaceCell * currentSurface;
   	int surfaceId, currSurfaceId = 0;
-  	int polygonId;
+  	int polygonId, currPolygonId = 0;
 	
   	char mystring [MAX_STRING_LENGTH];
   	char * ptr;
@@ -610,18 +582,28 @@ void ObjectScene::MakeSurfaces (FILE * ptrFile, ObjectCell * currentObject)
   	
   	do {
 		if (getStringNoComments(ptrFile, mystring)) {
-		  	sscanf (mystring, "%d%n", &surfaceId, &count);
+		  	sscanf (mystring, "%d%n", &polygonId, &count);
   			ptr = mystring;
+			ptr += count;
+			
+		  	sscanf (ptr, "%d%n", &surfaceId, &count);
 			ptr += count;
 		}
 		
- 		if (surfaceId != 0) {
+ 		if (polygonId != 0) {
+ 			
 			if (currSurfaceId != surfaceId) {
 	            // nouvelle surface
-				currSurfaceId = surfaceId;
 	 			currentSurface = new SurfaceCell;
 	 	  		currentObject->surfaceCellList.push_back (currentSurface);		// add to end of vector
 	 	  		
+				currSurfaceId++;
+				if (currSurfaceId != surfaceId) {
+	  				char errString [MAX_STRING_LENGTH];
+					sprintf (errString, "Error Message: currSurfaceId (%d) != surfaceId (%d)", currSurfaceId, surfaceId);
+					cout << errString << endl;
+				}
+				
 				if (currentObject->surfaceCellList.size() != surfaceId) {
 	  				char errString [MAX_STRING_LENGTH];
 					sprintf (errString, "Error Message: currentSurface (%d) != surfaceId (%d)", currentObject->surfaceCellList.size(), surfaceId);
@@ -629,23 +611,20 @@ void ObjectScene::MakeSurfaces (FILE * ptrFile, ObjectCell * currentObject)
 				}
 			}
 	
-		  	sscanf (ptr, "%d%n", &polygonId, &count);
-			ptr += count;
-			
 	  		PolygonCell * currentPolygon = new PolygonCell;
 		  	currentSurface->polygonCellList.push_back (currentPolygon);         // add to end of vector
 
-			if (currentSurface->polygonCellList.size() != polygonId) {
+			currPolygonId++;
+			if (currPolygonId != polygonId) {
   				char errString [MAX_STRING_LENGTH];
-				sprintf (errString, "Error Message: currentPolygon (%d) != polygonId (%d)", currentSurface->polygonCellList.size(), polygonId);
+				sprintf (errString, "Error Message: currPolygonId (%d) != polygonId (%d)", currPolygonId, polygonId);
 				cout << errString << endl;
 			}
-	
 	        // read a polygon
 			ReadAPolygon (ptr, surfaceId, currentPolygon, currentObject);
 		}
 		
-  	} while (surfaceId != 0);
+  	} while (polygonId != 0);
 }
 
 /**********************************************************
