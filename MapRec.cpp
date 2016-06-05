@@ -21,13 +21,14 @@ MapRec::MapRec (int xMid, int yMid) {
  * operator =
  * 
  * parameters IN :
- *	const MapRec& another
+ *	const MapRec & value
  * 
  * return value : MapRec *
  * 
  *********************************************************/
-void MapRec::operator = (const MapRec & another)
+void MapRec::operator = (const MapRec & value)
 {
-  	this->xMid = another.xMid;
-  	this->yMid = another.yMid;
+  	this->xMid = value.xMid;
+  	this->yMid = value.yMid;
 }
+

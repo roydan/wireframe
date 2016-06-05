@@ -19,7 +19,7 @@ private:
 
 public:
 	ScreenRec (int x = 0, int y = 0, int z = 0);
-    void operator = (const ScreenRec & another);
+    void operator = (const ScreenRec & value);
 	void Perspective (MyVector pos, ViewPointRec viewRefPoint, MapRec mapOffsets);
 
 	int GetX() { return x; }
@@ -31,3 +31,4 @@ public:
 };
 
 #endif   // SCREEN_REC_H
+

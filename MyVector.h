@@ -33,6 +33,7 @@ public:
 	void SetZ (double value) { z = value; }
 };
 
-ostream& operator << (ostream &os, const MyVector &v);
+ostream & operator << (ostream & os, const MyVector & v);
 
 #endif   // VECTOR_H
+

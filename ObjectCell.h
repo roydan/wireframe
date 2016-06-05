@@ -98,7 +98,6 @@ private:
 public:
   	int    		type;		//++ added
   	string 		name;
-  	int    		idNo;
   	vector<SurfaceCell *> surfaceCellList;
   	vector<VertexCell *>  vertexCellList;
   	MyMatrix      		  transformation;
@@ -128,3 +127,4 @@ private:
 };
 
 #endif   // OBJECT_CELL_H
+

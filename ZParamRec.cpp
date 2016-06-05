@@ -23,12 +23,13 @@ ZParamRec::ZParamRec (double zMin, double zMax, double zRange) {
  * operator =
  * 
  * parameters IN :
- *	const ZParamRec & another
+ *	const ZParamRec & value
  * 
  *********************************************************/
-void ZParamRec::operator = (const ZParamRec & another)
+void ZParamRec::operator = (const ZParamRec & value)
 {
-  	this->zMin = another.zMin;
-  	this->zMax = another.zMax;
-  	this->zRange = another.zRange;
+  	this->zMin = value.zMin;
+  	this->zMax = value.zMax;
+  	this->zRange = value.zRange;
 }
+

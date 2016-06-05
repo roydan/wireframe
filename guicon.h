@@ -12,3 +12,4 @@ using namespace std;
 void RedirectIOToConsole();
 
 #endif	// __GUICON_H__
+

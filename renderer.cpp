@@ -26,13 +26,13 @@ int    zBufferAt[DEV_MAX_X_RES + 1][DEV_MAX_Y_RES + 1];
 MyVector lightVector;
 
 /**********************************************************
+ * 
  * RenderScene
  * 
  * parameters IN:
  * 	HWND hWnd
  *	vector<ObjectCell *> objectCellList
  * 
- * return value : none
  *********************************************************/
 void RenderScene (HWND hWnd, vector<ObjectCell *> objectCellList) {
   	ghWnd = hWnd;
@@ -51,11 +51,9 @@ void RenderScene (HWND hWnd, vector<ObjectCell *> objectCellList) {
 }
 
 /**********************************************************
+ * 
  * initializeZBuffer
  * 
- * parameters IN : none
- * 
- * return value : none
  *********************************************************/
 void initializeZBuffer()
 {
@@ -69,12 +67,12 @@ void initializeZBuffer()
 }
 
 /**********************************************************
+ * 
  * RenderObject
  * 
  * parameters IN:
  *	ObjectCell * currentObject
  * 
- * return value : none
  *********************************************************/
 void RenderObject (ObjectCell * currentObject)
 {
@@ -94,12 +92,12 @@ void RenderObject (ObjectCell * currentObject)
 }
 
 /**********************************************************
+ * 
  * RenderPolygon
  * 
  * parameters IN:
  *	PolygonCell * currentPolygon
  * 
- * return value : none
  *********************************************************/
 void RenderPolygon (PolygonCell * currentPolygon)
 {
@@ -129,13 +127,13 @@ void RenderPolygon (PolygonCell * currentPolygon)
 }
 
 /**********************************************************
+ * 
  * AddEdgeToList
  * 
  * parameters IN:
  * 	VertexCell * vertex1
  *	VertexCell * vertex2
  * 
- * return value : none
  *********************************************************/
 void AddEdgeToList (VertexCell * vertex1, VertexCell * vertex2)
 {
@@ -191,6 +189,7 @@ void AddEdgeToList (VertexCell * vertex1, VertexCell * vertex2)
 }
 
 /**********************************************************
+ * 
  * RenderSpan
  * 
  * parameters IN:
@@ -198,7 +197,6 @@ void AddEdgeToList (VertexCell * vertex1, VertexCell * vertex2)
  *	EdgeBox ** edgeBox1
  *	EdgeBox ** edgeBox2
  * 
- * return value : none
  *********************************************************/
 void RenderSpan (int y, EdgeBox ** edgeBox1, EdgeBox ** edgeBox2)
 {
@@ -247,6 +245,7 @@ void RenderSpan (int y, EdgeBox ** edgeBox1, EdgeBox ** edgeBox2)
 }
 
 /**********************************************************
+ * 
  * RenderPixel
  * 
  * parameters IN:
@@ -255,7 +254,6 @@ void RenderSpan (int y, EdgeBox ** edgeBox1, EdgeBox ** edgeBox2)
  *	double i
  *	MyVector w
  * 
- * return value : none
  *********************************************************/
 void RenderPixel (int x, int y, double i, MyVector w)
 {
@@ -294,12 +292,14 @@ void RenderPixel (int x, int y, double i, MyVector w)
 }
 
 /**********************************************************
+ * 
  * woodGrain
  * 
  * parameters IN:
  * 	MyVector w
  * 
  * return value : double
+ * 
  *********************************************************/
 double woodGrain (MyVector w)
 {
@@ -324,6 +324,7 @@ double woodGrain (MyVector w)
 }
 
 /**********************************************************
+ * 
  * arcTangent
  * 
  * parameters IN:
@@ -331,6 +332,7 @@ double woodGrain (MyVector w)
  *	double z
  * 
  * return value : double
+ * 
  *********************************************************/
 double arcTangent (double x, double z)
 {

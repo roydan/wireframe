@@ -29,16 +29,16 @@ ScreenRec::ScreenRec (int x, int y, int z) {
  * operator =
  * 
  * parameters IN :
- *	const ScreenRec & another
+ *	const ScreenRec & value
  * 
  * return value : ScreenRec *
  * 
  *********************************************************/
-void ScreenRec::operator = (const ScreenRec & another)
+void ScreenRec::operator = (const ScreenRec & value)
 {
-  	this->x = another.x;
-  	this->y = another.y;
-  	this->z = another.z;
+  	this->x = value.x;
+  	this->y = value.y;
+  	this->z = value.z;
 }
 
 /**********************************************************

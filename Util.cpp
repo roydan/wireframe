@@ -27,6 +27,7 @@ double Util::InRadians (double degrees) {
  *********************************************************/
 
 /**********************************************************
+ * 
  * WritePrivateProfileInt
  * 
  * parameters IN :
@@ -36,14 +37,16 @@ double Util::InRadians (double degrees) {
  * 	const char * fileName
  * 
  * return value : BOOL
+ * 
  *********************************************************/
-BOOL WritePrivateProfileInt (char * ApplicationName, char * keyName, int value, const char * fileName) {	//?? const char *
+BOOL WritePrivateProfileInt (char * ApplicationName, char * keyName, int value, const char * fileName) {
     char str[MAX_STRING_LENGTH];
  	sprintf (str, "%d", value);
  	return WritePrivateProfileString (ApplicationName, keyName, str, fileName);
 }
 
 /**********************************************************
+ * 
  * GetDlgItemDouble
  * 
  * parameters IN :
@@ -51,6 +54,7 @@ BOOL WritePrivateProfileInt (char * ApplicationName, char * keyName, int value, 
  *	int idDlgItem
  * 
  * return value : double
+ * 
  *********************************************************/
 double GetDlgItemDouble (HWND hDlg, int idDlgItem) {
     char str[MAX_STRING_LENGTH];
@@ -61,6 +65,7 @@ double GetDlgItemDouble (HWND hDlg, int idDlgItem) {
 }
 
 /**********************************************************
+ * 
  * SetDlgItemDouble
  * 
  * parameters IN :
@@ -68,7 +73,6 @@ double GetDlgItemDouble (HWND hDlg, int idDlgItem) {
  *	int idDlgItem
  *  double value
  * 
- * return value : none
  *********************************************************/
 void SetDlgItemDouble (HWND hDlg, int idDlgItem, double value) {
   	char str[MAX_STRING_LENGTH];

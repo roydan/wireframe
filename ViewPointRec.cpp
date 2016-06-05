@@ -28,15 +28,15 @@ ViewPointRec::ViewPointRec (int viewPlaneDist, int rho, int theta, int phi) {
  * operator =
  * 
  * parameters IN :
- *	const ViewPointRec & another
+ *	const ViewPointRec & value
  * 
  *********************************************************/
-void ViewPointRec::operator = (const ViewPointRec & another)
+void ViewPointRec::operator = (const ViewPointRec & value)
 {
-    this->viewPlaneDist = another.viewPlaneDist;
-  	this->rho = another.rho;
-    this->theta = another.theta;
-    this->phi = another.phi;
+    this->viewPlaneDist = value.viewPlaneDist;
+  	this->rho = value.rho;
+    this->theta = value.theta;
+    this->phi = value.phi;
 }
 
 /**********************************************************

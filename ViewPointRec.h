@@ -22,7 +22,7 @@ private:
 
 public:
     ViewPointRec (int viewPlaneDist = 1000, int rho = 5000, int theta = 45, int phi = 45);
-    void operator = (const ViewPointRec& another);
+    void operator = (const ViewPointRec& value);
 
     void SetViewVariables (MyMatrix & viewTransformation);
     void SetViewTransformation (MyMatrix & viewTransformation);
@@ -49,3 +49,4 @@ public:
 };
 
 #endif   // VIEW_POINT_REC_H
+

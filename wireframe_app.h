@@ -19,3 +19,4 @@ void DrawVertexNormalsCtrl (HWND hWnd);
 static void TestSub (void);
 
 #endif   // WIREFRAME_APP_H
+

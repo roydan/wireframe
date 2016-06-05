@@ -9,7 +9,7 @@ private:
 
 public:
   	MapRec (int xMid = 0, int yMid = 0);
-    void operator = (const MapRec & another);
+    void operator = (const MapRec & value);
   	
   	int GetXMid() { return xMid; }
     int GetYMid() { return yMid; }

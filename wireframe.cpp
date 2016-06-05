@@ -18,78 +18,6 @@
  *   vertices are stored in a defined order:
  *     counterclockwise with respect to viewing from the outside of the object
  *
- **********************************************************
- *
- * CHANGED:
- *		TO											FROM
- *
- * class ObjectScene
- * 		vector<ObjectCell *> objectCellList;		ObjectCell * objectCellList;
- *
- *      objectCellList.size()		                noOfObjects
- *
- * class ObjectCell
- * 		vector<SurfaceCell *> surfaceCellList;		SurfaceCell * surfaceCellList;
- * 		vector<VertexCell *>  vertexCellList;		VertexCell *  vertexCellList;
- * 		vector<VertexCell *>  vertexAt;			VertexCell *  vertexAt[MAX_NO_OF_VERTICES];
- *
- * class SurfaceCell
- *   	vector<PolygonCell *> polygonCellList;		PolygonCell * polygonCellList;
- *
- *
- *
- * REMOVED:
- *
- * class ObjectCell
- *		ObjectCell * next;
- *
- * class SurfaceCell
- *		SurfaceCell * next;
- *
- *
- *
- *
- *
- **********************************************************
- * 
- * added points FROM vertexAt[] TO vertexCellList
- * 
- *
- *
- *
- *
- **********************************************************
- * 
- * 	guicon.cpp / .h
- * 	Popfile.cpp / .h
- * 	ScreenRec.cpp / .h
- * 
- * 	MapRec.cpp / .h
- * 
- **********************************************************
- *
- * TO DO:
- *
- * class PolygonList
- *   	PolygonList is in reality a vector of <PolygonCell *> object : vector<PolygonCell *> poly;
- *   	remove: PolygonList * next;
- *
- * class PolygonCell
- *   	VertexList * vertexListHead;  ->  vector<VertexList *> vertexListHead;
- *   	remove: PolygonCell * next;
- *
- * class VertexList
- *   	VertexList is in reality a vector of <VertexCell *> object : vector<VertexCell *> vertex;
- *   	remove: VertexList * next;
- *
- * class VertexCell
- *   	PolygonList is in reality a vector of <PolygonCell *> object : vector<PolygonCell *> polyListHead;
- *   	remove: VertexCell * next;
- *
- *
- *
- *
- *
  *********************************************************/
 
 #include <windows.h>
@@ -123,26 +51,17 @@ FileStruct fileObject;
 FileStruct fileScene;
  
 /**********************************************************
- * WireframeFunction
  * 
  * WireframeFunction
  * 
  * parameters IN:
  * 	int iMsg
- *		WIREFRAME_WM_CREATE        1
- *		WIREFRAME_LOAD_OBJECT      2
- *		WIREFRAME_LOAD_SCENE       9
- *		WIREFRAME_WM_PAINT         3
- *		WIREFRAME_RENDER_SCENE     4
- *		WIREFRAME_TRANSFORM_OBJECT 5
- *		WIREFRAME_VIEW_POINT       6
- *		WIREFRAME_WM_DESTROY       7
- *		WIREFRAME_ABOUT            8
  *	HWND hWnd
  *	WPARAM wParam
  *	LPARAM lParam
  * 
  * return value : int
+ * 
  *********************************************************/
 int WireframeFunction (int iMsg, HWND hWnd, WPARAM wParam, LPARAM lParam) {
   	static HINSTANCE hInst;
@@ -174,11 +93,9 @@ int WireframeFunction (int iMsg, HWND hWnd, WPARAM wParam, LPARAM lParam) {
 			strcpy(objectName, "");
 
 			if (fileObject.PopFileOpen (hWnd, fileName, objectName)) {
-               	//?? cout << "fileName=   " << fileName << endl;
-               	//?? cout << "objectName= " << objectName << endl;
                	if (strstr(objectName, ".obj") != NULL) {
                 	// load an object
-  	  	  			if (ptrScene->LoadObjectExt (fileName, objectName) == false) {
+  	  	  			if (ptrScene->LoadObject (fileName, objectName) == false) {
   	  	    			ptrScene->sceneChanged = true;
 					} else {
 						return 1;
@@ -205,8 +122,6 @@ int WireframeFunction (int iMsg, HWND hWnd, WPARAM wParam, LPARAM lParam) {
 			strcpy(objectName, "");
 
 			if (fileScene.PopFileOpen (hWnd, fileName, objectName)) {
-               	//?? cout << "fileName=   " << fileName << endl;
-               	//?? cout << "objectName= " << objectName << endl;
                	if (strstr(objectName, ".scn") != NULL) {
   	  		   		// Load a scene
   	  		   	    if (ptrScene->LoadScene (hWnd, fileName, objectName) == false) {
@@ -216,7 +131,7 @@ int WireframeFunction (int iMsg, HWND hWnd, WPARAM wParam, LPARAM lParam) {
 					}
                	} else if (strstr(objectName, ".obj") != NULL) {
                		// load an object
-  	  	  			if (ptrScene->LoadObjectExt (fileName, objectName) == false) {
+  	  	  			if (ptrScene->LoadObject (fileName, objectName) == false) {
   	  	    			ptrScene->sceneChanged = true;
 					} else {
 						return 1;
@@ -240,12 +155,14 @@ int WireframeFunction (int iMsg, HWND hWnd, WPARAM wParam, LPARAM lParam) {
 
   	  	case WIREFRAME_RENDER_SCENE:
         {
+			/****************************
 			// Render Scene
 			if (ptrScene->objectCellList.size() > 0) {
 				RenderScene (hWnd, ptrScene->objectCellList);
 			} else {
   	  	    	MessageBox (NULL, "No objects currently loaded", NULL, MB_OK);
 			}
+			****************************/
         }
         break;
 
@@ -274,12 +191,23 @@ int WireframeFunction (int iMsg, HWND hWnd, WPARAM wParam, LPARAM lParam) {
   	  	case WIREFRAME_WM_DESTROY:
 		{
   	  	 	// store settings
-  	  	 	WritePrivateProfileInt ("VIEWING_INFORMATION", "ViewPlaneDistance", ptrScene->viewRefPoint.GetViewPlaneDist(), DEFAULT_INI.c_str());
-  	  	 	WritePrivateProfileInt ("VIEWING_INFORMATION", "Rho", ptrScene->viewRefPoint.GetRho(), DEFAULT_INI.c_str());
-  	  	 	WritePrivateProfileInt ("VIEWING_INFORMATION", "Theta", ptrScene->viewRefPoint.GetTheta(), DEFAULT_INI.c_str());
-  	  	 	WritePrivateProfileInt ("VIEWING_INFORMATION", "Phi", ptrScene->viewRefPoint.GetPhi(), DEFAULT_INI.c_str());
-
-  	  	 	WritePrivateProfileInt ("VIEWING_INFORMATION", "DrawVertexNormals", ptrScene->drawVertexNormals, DEFAULT_INI.c_str());
+  	  	 	// TODO validate WritePrivateProfileInt
+			char str [MAX_STRING_LENGTH];
+			
+			sprintf (str, "%d", ptrScene->viewRefPoint.GetViewPlaneDist());
+  	  	 	WritePrivateProfileString ("VIEWING_INFORMATION", "ViewPlaneDistance", str, ".\\wireframe.ini");
+			
+			sprintf (str, "%d", ptrScene->viewRefPoint.GetRho());
+  	  	 	WritePrivateProfileString ("VIEWING_INFORMATION", "Rho", str, ".\\wireframe.ini");
+			
+			sprintf (str, "%d", ptrScene->viewRefPoint.GetTheta());
+  	  	 	WritePrivateProfileString ("VIEWING_INFORMATION", "Theta", str, ".\\wireframe.ini");
+			
+			sprintf (str, "%d", ptrScene->viewRefPoint.GetPhi());
+  	  	 	WritePrivateProfileString ("VIEWING_INFORMATION", "Phi", str, ".\\wireframe.ini");
+			
+			sprintf (str, "%d", (int)ptrScene->drawVertexNormals);
+  	  	 	WritePrivateProfileString ("VIEWING_INFORMATION", "DrawVertexNormals", str, ".\\wireframe.ini");
 		}
   	  	break;
 
@@ -293,7 +221,6 @@ int WireframeFunction (int iMsg, HWND hWnd, WPARAM wParam, LPARAM lParam) {
 }
 
 /**********************************************************
- * TransformationDlgProc
  * 
  * TransformationDlgProc
  * 
@@ -301,34 +228,14 @@ int WireframeFunction (int iMsg, HWND hWnd, WPARAM wParam, LPARAM lParam) {
  *	HWND hwndDlg
  * 	UINT uMsg
  *		WM_INITDIALOG
- * 
  * 	  	WM_COMMAND
- *	  		LOWORD(wParam)
- * 	  	  		IDC_CB_OBJECT
- *					HIWORD(wParam)
- *					  	CBN_SELCHANGE
- *				DL_ROTATION_X
- *				DL_ROTATION_Y
- *				DL_ROTATION_Z
- *				DL_SCALING_X
- *				DL_SCALING_Y
- *				DL_SCALING_Z
- *				DL_TRANSLATION_X
- *				DL_TRANSLATION_Y
- *				DL_TRANSLATION_Z
- *				IDC_EXEC_ROTATION
- *				IDC_EXEC_SCALING
- *				IDC_EXEC_TRANSLATION
- *				IDC_TRANSFORMATION_RESET
- *				IDOK
- *				IDCANCEL
- * 
  *	WPARAM wParam
  *	LPARAM lParam
  * 
- * return value : BOOL
+ * return value : INT_PTR
+ * 
  *********************************************************/
-INT_PTR CALLBACK TransformationDlgProc (HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)		//?? FROM BOOL TO INT_PTR
+INT_PTR CALLBACK TransformationDlgProc (HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
   	static ObjectCell * currentObject;
   	static MyVector rv (0,0,0);
@@ -458,7 +365,6 @@ INT_PTR CALLBACK TransformationDlgProc (HWND hwndDlg, UINT uMsg, WPARAM wParam, 
 }
 
 /**********************************************************
- * InitTransformationDlg
  * 
  * InitTransformationDlg
  * 
@@ -468,7 +374,6 @@ INT_PTR CALLBACK TransformationDlgProc (HWND hwndDlg, UINT uMsg, WPARAM wParam, 
  *	MyVector * sv
  *	MyVector * tv
  * 
- * return value : void
  *********************************************************/
 void InitTransformationDlg(HWND hwndDlg, MyVector * rv, MyVector * sv, MyVector * tv)
 {
@@ -489,7 +394,6 @@ void InitTransformationDlg(HWND hwndDlg, MyVector * rv, MyVector * sv, MyVector 
 }
 
 /**********************************************************
- * ViewRefPointDlgProc
  * 
  * ViewRefPointDlgProc
  * 
@@ -497,38 +401,15 @@ void InitTransformationDlg(HWND hwndDlg, MyVector * rv, MyVector * sv, MyVector 
  *	HWND hwndDlg
  * 	UINT uMsg
  * 	  	WM_INITDIALOG
- * 
  * 	  	WM_HSCROLL
- * 	  	  	LOWORD(wParam)
- *				SB_PAGELEFT
- *				SB_LINELEFT
- *				SB_LINERIGHT
- *				SB_PAGERIGHT
- *				SB_THUMBPOSITION
- *				SB_THUMBTRACK
- *					IDC_SCROLLBAR_RHO
- *					IDC_SCROLLBAR_THETA
- *					IDC_SCROLLBAR_PHI
- *					IDC_SCROLLBAR_VIEWDIST
- * 
- * 	  	case WM_COMMAND
- * 	  	  	LOWORD(wParam)
- *			  	IDC_VP_VIEW_DISTANCE
- *			  	IDC_VP_RHO
- *			  	IDC_VP_THETA
- *			  	IDC_VP_PHI
- *			  	IDC_EXECUTE
- *			  	IDC_PV_RESET
- *			  	IDOK
- *			  	IDCANCEL
- * 
- * 
+ * 	  	WM_COMMAND
  *	WPARAM wParam
  *	LPARAM lParam
  * 
- * return value : BOOL
+ * return value : INT_PTR
+ * 
  *********************************************************/
-INT_PTR CALLBACK ViewRefPointDlgProc (HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)		//?? FROM BOOL TO INT_PTR
+INT_PTR CALLBACK ViewRefPointDlgProc (HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
   	static HWND hwndParent = NULL;
   	HWND hwndCtrl;
@@ -739,7 +620,6 @@ INT_PTR CALLBACK ViewRefPointDlgProc (HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
 }
 
 /**********************************************************
- * InitViewRefPointDlg
  * 
  * InitViewRefPointDlg
  * 
@@ -747,7 +627,6 @@ INT_PTR CALLBACK ViewRefPointDlgProc (HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
  *	HWND hwndDlg
  * 	ViewPointRec * viewRefPoint
  * 
- * return value : void
  *********************************************************/
 void InitViewRefPointDlg(HWND hwndDlg, ViewPointRec * viewRefPoint)
 {
@@ -775,7 +654,6 @@ void InitViewRefPointDlg(HWND hwndDlg, ViewPointRec * viewRefPoint)
 }
 
 /**********************************************************
- * AboutBoxDlgProc
  * 
  * AboutBoxDlgProc
  * 
@@ -783,16 +661,13 @@ void InitViewRefPointDlg(HWND hwndDlg, ViewPointRec * viewRefPoint)
  *	HWND hwndDlg
  * 	UINT uMsg
  * 	  	WM_COMMAND
- * 	  	  	LOWORD(wParam)
- *				IDOK
- *				IDCANCEL
- * 
  *	WPARAM wParam
  *	LPARAM lParam
  * 
- * return value : BOOL
+ * return value : INT_PTR
+ * 
  *********************************************************/
-INT_PTR CALLBACK AboutBoxDlgProc (HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)		//?? FROM BOOL TO INT_PTR
+INT_PTR CALLBACK AboutBoxDlgProc (HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
   	switch(uMsg) {
   	  	case WM_COMMAND:
@@ -809,3 +684,4 @@ INT_PTR CALLBACK AboutBoxDlgProc (HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM
   	}
   	return FALSE;
 }
+

@@ -32,15 +32,15 @@ public:
 	double GetValue (int row, int col);
 	void SetValue (int row, int col, double value);
 
-	double* operator [] (int row) {
+	double * operator [] (int row) {
     	return matrix[row];
 	}
 
-	const double* operator [] (int row) const {
+	const double * operator [] (int row) const {
 		return matrix[row];
 	}
 };
 
-ostream& operator << (ostream &os, const MyMatrix &m);
+ostream & operator << (ostream & os, const MyMatrix & m);
 
 #endif   // MATRIX_H

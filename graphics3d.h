@@ -16,9 +16,8 @@ using namespace std;
 struct DEV_COLOR {
   	int r, g, b;		// 0..255
   	DEV_COLOR (int rr = 0, int gg = 0, int bb = 0) :
-                  r(rr), g(gg), b(bb) {};
+                r(rr), g(gg), b(bb) {};
 };
 
 #endif   // GRAPHICS3D_H
-
 

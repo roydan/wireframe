@@ -9,7 +9,6 @@
 #include "wireframe.h"
 #include "Util.h"
 #include "wireframe_app.h"
-// #include "ViewPointRec.h"
 
 const double NSF = 30.0;			// Normal Scale Factor
 
@@ -28,31 +27,61 @@ const double HIGH_DOUBLE = 1.E30;
  * 
  * return value : ObjectScene *
  * 
+ *********************************************************
+ * 
+ * TODO
+ * polygon number 1..last
+ * surface number
+ * 
  *********************************************************/
 ObjectScene::ObjectScene (HWND hWnd) {
   	RECT rect;
   	GetClientRect (hWnd, &rect);
-	int rl = (int)((rect.right - rect.left) / 2);
-	int bt = (int)((rect.bottom - rect.top) / 2);
-	mapOffsets = MapRec (rl, bt);
+	int xMid = (int)((rect.right - rect.left) / 2);
+	int yMid = (int)((rect.bottom - rect.top) / 2);
+	mapOffsets = MapRec (xMid, yMid);
 
-  	int viewPlaneDist = GetPrivateProfileInt ("VIEWING_INFORMATION", "ViewPlaneDistance", 1000, DEFAULT_INI.c_str());
-  	int rho = GetPrivateProfileInt ("VIEWING_INFORMATION", "Rho", 5000, DEFAULT_INI.c_str());
-  	int theta = GetPrivateProfileInt ("VIEWING_INFORMATION", "Theta", 45, DEFAULT_INI.c_str());
-  	int phi = GetPrivateProfileInt ("VIEWING_INFORMATION", "Phi", 75, DEFAULT_INI.c_str());
+	// TODO validate GetPrivateProfileInt
+	
+	char strDefault [MAX_STRING_LENGTH];
+	char inBuf [MAX_STRING_LENGTH];
+	int intValue;
+			
+	sprintf (strDefault, "%d", 1000);
+ 	GetPrivateProfileString ("VIEWING_INFORMATION", "ViewPlaneDistance", strDefault, inBuf, sizeof(inBuf), ".\\wireframe.ini");
+  	sscanf (inBuf, "%d", &intValue);
+  	int viewPlaneDist = intValue;
+
+	sprintf (strDefault, "%d", 5000);
+ 	GetPrivateProfileString ("VIEWING_INFORMATION", "Rho", strDefault, inBuf, sizeof(inBuf), ".\\wireframe.ini");
+  	sscanf (inBuf, "%d", &intValue);
+  	int rho = intValue;
+
+	sprintf (strDefault, "%d", 45);
+ 	GetPrivateProfileString ("VIEWING_INFORMATION", "Theta", strDefault, inBuf, sizeof(inBuf), ".\\wireframe.ini");
+  	sscanf (inBuf, "%d", &intValue);
+  	int theta = intValue;
+
+	sprintf (strDefault, "%d", 75);
+ 	GetPrivateProfileString ("VIEWING_INFORMATION", "Phi", strDefault, inBuf, sizeof(inBuf), ".\\wireframe.ini");
+  	sscanf (inBuf, "%d", &intValue);
+  	int phi = intValue;
+
     viewRefPoint = ViewPointRec (viewPlaneDist, rho, theta, phi);
 
   	SetViewVariables();
 
   	// draw vertex normals
-  	drawVertexNormals = (bool)GetPrivateProfileInt ("VIEWING_INFORMATION", "DrawVertexNormals", false, DEFAULT_INI.c_str());
+	// TODO validate GetPrivateProfileInt
+
+	sprintf (strDefault, "%d", (int)false);
+ 	GetPrivateProfileString ("VIEWING_INFORMATION", "DrawVertexNormals", strDefault, inBuf, sizeof(inBuf), ".\\wireframe.ini");
+  	sscanf (inBuf, "%d", &intValue);
+  	drawVertexNormals = (bool)intValue;
 
     sceneChanged = false;
 
   	objectCellList.clear();
-
-    objectFile = NULL;
-    sceneFile = NULL;
 }
 
 /**********************************************************
@@ -87,8 +116,6 @@ void ObjectScene::WireFrameScene (HWND hWnd) {
   	HPEN      hPen, hPenOld;	
 
   	HDC hDC = GetDC(hWnd);
-
-	//?? DevClearScreen();
 
 	for (vector<ObjectCell *>::iterator it = objectCellList.begin(); it != objectCellList.end(); ++it) {
 		ObjectCell * currentObject = *it;
@@ -279,38 +306,6 @@ void ObjectScene::CalculateScreenCoordinates() {
 
 /**********************************************************
  * 
- * scene file
- * 
- **********************************************************
- * 
- * 						viewing information
- *  1						  1 = perspective , 0 = parallel
- * -7000					  view distance			ViewPointRec.viewPlaneDist
- *  10000					  perspective distance
- * -0.7	-0.4	-0.3	  view plane normal		ViewPointRec.rho .theta .phi
- *  0.0	0.0		1.0		  view up vector
- *  0						  draw vertex normals	bool drawVertexNormals
- *  4						no. of objects
- *  1						object id
- *  cube.obj				object data filename
- * 						object transformations	MyMatrix transformation
- *  0.4 0.4 0.4		  	  scale vector
- *  0.0 0.0 0.0		  	  rotate vector
- *  0.5 1.7 -0.6		  	  translate vector
- * 
- **********************************************************
- * 
- *  view distance
- *  rho
- *  theta
- *  phi
- *  draw vertex normals
- *  no. of objects
- *  object data filename
- *  object transformations / scale / rotate / translate
- * 
- **********************************************************
- * 
  * LoadScene
  * 
  * parameters IN :
@@ -319,141 +314,272 @@ void ObjectScene::CalculateScreenCoordinates() {
  *	char * sceneName
  * 
  * return value : bool
+ *					true if error
+ * 
+ **********************************************************
+ * 
+ * data structure for scene file (example)
+ *
+ *						viewing information
+ *  1					1 = perspective, 0 = parallel
+ * -7000				view distance
+ *  10000				perspective distance
+ * -0.7	-0.4 -0.3	  	view plane normal
+ *  0.0	 0.0  1.0		view up vector
+ *  0					draw vertex normals
+ *							0 = false, 1 = true
+ *
+ *  4					number of objects
+ *
+ *  cube.obj			object data filename
+ * 						object transformations
+ *    0.4  0.4  0.4		scale vector
+ *    0.0  0.0  0.0		rotate vector
+ *    0.5  1.7 -0.6		translate vector
+ * 
+ **********************************************************
+ * 
+ * data structure for scene file (implemented)
+ * 
+ * view distance			ViewPointRec.viewPlaneDist
+ * rho						ViewPointRec.rho
+ * theta					ViewPointRec.theta
+ * phi						ViewPointRec.phi
+ * draw vertex normals		bool drawVertexNormals
+ *
+ * object data filename
+ * object transformations	MyMatrix transformation
+ * 		scale vector
+ *		rotate vector
+ *		translate vector
+ * object color
+ *		rgb vector
  * 
  *********************************************************/
 bool ObjectScene::LoadScene (HWND hWnd, char * fileName, char * sceneName) {
-  	sceneFile = fopen (fileName, "r");
+  	FILE * sceneFile = fopen (fileName, "r");
   	if (sceneFile == NULL) return true;
 
+    char objectFilename[MAX_STRING_LENGTH];
+  	char mystring [MAX_STRING_LENGTH];
     int intValue;
-    int nbObjects;
-    int objectId;
-    char fileNameObject[MAX_STRING_LENGTH];
   	double tempX, tempY, tempZ;
-    
-  	fscanf (sceneFile, "%d\n", &intValue);
-  	viewRefPoint.SetViewPlaneDist (intValue);
-  	fscanf (sceneFile, "%d\n", &intValue);
-  	viewRefPoint.SetRho (intValue);
-  	fscanf (sceneFile, "%d\n", &intValue);
-  	viewRefPoint.SetTheta (intValue);
-  	fscanf (sceneFile, "%d\n", &intValue);
-  	viewRefPoint.SetPhi (intValue);
-
-  	fscanf (sceneFile, "%d\n", &intValue);
-  	drawVertexNormals = (bool)intValue;
+	
+	// viewing information
+	
+	if (getStringNoComments(sceneFile, mystring)) {
+	  	sscanf (mystring, "%d", &intValue);
+  		viewRefPoint.SetViewPlaneDist (intValue);
+	}
+		  	
+	if (getStringNoComments(sceneFile, mystring)) {
+	  	sscanf (mystring, "%d", &intValue);
+  		viewRefPoint.SetRho (intValue);
+	}
+		  	
+	if (getStringNoComments(sceneFile, mystring)) {
+	  	sscanf (mystring, "%d", &intValue);
+  		viewRefPoint.SetTheta (intValue);
+	}
+		  	
+	if (getStringNoComments(sceneFile, mystring)) {
+	  	sscanf (mystring, "%d", &intValue);
+  		viewRefPoint.SetPhi (intValue);
+	}
+	
+	if (getStringNoComments(sceneFile, mystring)) {
+	  	sscanf (mystring, "%d", &intValue);
+	  	drawVertexNormals = (bool)intValue;
+	}
+	
     DrawVertexNormalsCtrl (hWnd);
 
   	SetViewVariables();
 
     int i = 0;
 
-    fscanf (sceneFile, "%d\n", &objectId);
-    cout << "objectId= " << objectId << endl;
-		
-  	while (objectId != 0) {
-  	    fscanf (sceneFile, "%s\n", &fileNameObject);
+	bool found = false;
+	do {
+		found = getStringNoComments(sceneFile, mystring);
+		if (found) {
+			
+			// object data
 
-  	    fscanf (sceneFile, "%lf %lf %lf\n", &tempX, &tempY, &tempZ);
-  	    MyVector scale (tempX, tempY, tempZ);
+		  	sscanf (mystring, "%s", &objectFilename);
 
-  	    fscanf (sceneFile, "%lf %lf %lf\n", &tempX, &tempY, &tempZ);
-  	    MyVector rotate (tempX, tempY, tempZ);
-
-  	    fscanf (sceneFile, "%lf %lf %lf\n", &tempX, &tempY, &tempZ);
-  	    MyVector translate (tempX, tempY, tempZ);
-
-  	    DEV_COLOR aColor_scn = DEV_COLOR();
-  	    fscanf (sceneFile, "%d\n", &(aColor_scn.r));
-  	    fscanf (sceneFile, "%d\n", &(aColor_scn.g));
-  	    fscanf (sceneFile, "%d\n", &(aColor_scn.b));
-  	    //?? cout << "aColor_scn.r,g,b = " << aColor_scn.r << " , " << aColor_scn.g << " , " << aColor_scn.b << endl;
-
-        if (strstr(fileNameObject, ".obj") != NULL) {
-            // load an object
-  	  	  	if (LoadObjectExt (fileNameObject, fileNameObject) == false) {
-
-  		       ObjectCell * currentObject = objectCellList [i];
-
-               currentObject->GetTransformation (SCALING, scale);
-               currentObject->GetTransformation (ROTATION, rotate);
-               currentObject->GetTransformation (TRANSLATION, translate);
-
-              //?? cout << "currentObject->devColor.r,g,b (scn) = " << currentObject->devColor.r << " , " << currentObject->devColor.g << " , " << currentObject->devColor.b << endl;
-               if (!((aColor_scn.r == 0) && (aColor_scn.g == 0) && (aColor_scn.b == 0))) {
-  	              currentObject->devColor = aColor_scn;
-  	              cout << "currentObject->devColor (scn)= " << currentObject->devColor.r << " , " << currentObject->devColor.g << " , " << currentObject->devColor.b << endl;
-               }
-
-  	  	    	sceneChanged = true;
-			}
-        }
-
-        i++;
-        
-        fscanf (sceneFile, "%d\n", &objectId);
-        cout << "objectId= " << objectId << endl;
-    }
+		  	MyVector scale, rotate, translate;
+		  	
+			if (getStringNoComments(sceneFile, mystring)) {
+	  			sscanf (mystring, "%lf %lf %lf", &tempX, &tempY, &tempZ);
+		  	    scale = MyVector (tempX, tempY, tempZ);
+	  		}
+	
+			if (getStringNoComments(sceneFile, mystring)) {
+	  			sscanf (mystring, "%lf %lf %lf", &tempX, &tempY, &tempZ);
+		  	    rotate = MyVector (tempX, tempY, tempZ);
+	  		}
+	
+			if (getStringNoComments(sceneFile, mystring)) {
+	  			sscanf (mystring, "%lf %lf %lf", &tempX, &tempY, &tempZ);
+		  	    translate = MyVector (tempX, tempY, tempZ);
+	  		}
+	
+	  	    DEV_COLOR aColor_scn = DEV_COLOR();
+			if (getStringNoComments(sceneFile, mystring)) {
+	  			sscanf (mystring, "%d %d %d", &aColor_scn.r, &aColor_scn.g, &aColor_scn.b);
+	  		}
+	  	    
+            char * ptr = strstr(objectFilename, ".obj");
+            if (ptr != NULL) {
+	            // load an object
+    			char objectName[MAX_STRING_LENGTH];
+    			int len = ptr - objectFilename;
+    			strncpy(objectName, objectFilename, len);
+    			objectName[len] = '\0';
+	            
+	  	  	  	if (LoadObject (objectFilename, objectName) == false) {
+	  		    	ObjectCell * currentObject = objectCellList [i];
+	
+	               	currentObject->GetTransformation (SCALING, scale);
+	               	currentObject->GetTransformation (ROTATION, rotate);
+	               	currentObject->GetTransformation (TRANSLATION, translate);
+	
+	               	if (!((aColor_scn.r == 0) && (aColor_scn.g == 0) && (aColor_scn.b == 0))) {
+						// if (0,0,0) then use default
+	  	              	currentObject->devColor = aColor_scn;
+	               	}
+	
+	  	  	    	sceneChanged = true;
+				}
+	        }
+	
+	        i++;
+		}
+	} while (found);
     
   	fclose (sceneFile);
   	return false;
 }
 
+ /*********************************************************
+ * 
+ * ignoreComments
+ * 
+ * parameters IN :
+ *	const char * s
+ * 
+ * return value : bool
+ *					true if found line without comments
+ * 
+ *********************************************************/
+bool ObjectScene::getStringNoComments(FILE * ptrFile, char * s) {
+  	if (ptrFile == NULL) return false;
+  	
+	bool found = false;
+	bool exitLoop = false;
+	do {
+	  	if (fgets (s, MAX_STRING_LENGTH, ptrFile) != NULL) {
+	  		removeSpaces(s);
+		  	char * ptrchar = strstr (s, "!");
+		  	if ((ptrchar == NULL) || (ptrchar != s)) {
+		  		// comment not found OR comment not first character
+		  		found = true;
+				exitLoop = true;
+			}
+		} else {
+			// read past end-of-file
+			exitLoop = true;
+		}
+	} while (!exitLoop);
+	
+	return found;
+}
+
+void ObjectScene::removeSpaces (char * s) {
+	do {
+	    if ((*s == '\0') || (!isspace (*s))) {
+	    	break;
+		} else {
+			s++;
+		}
+	} while (true);
+}
 
 /**********************************************************
  * 
- * object file
- * 
- **********************************************************
- * 
- * type
- * no_vertices
- * ReadVertices()
- * 		vertex.id vertex.x vertex.y vertex.z
- * no_surfaces
- * MakeSurfaces()
- * 		surface.id no_polygons
- * 		polygon.id no_vertices_in_polygon vertex.id
- * 
- **********************************************************
- * 
- * LoadObjectExt
+ * LoadObject
  * 
  * parameters IN :
  *	char * fileName
  *	char * objectName
  * 
  * return value : bool
+ *					true if fail
  * 
+ **********************************************************
+ * 
+ * object data file structure (example)
+ * 
+ * number of vertices
+ * number of polygons
+ * number of surfaces
+ *
+ * vertex information
+ * 		vertex number
+ *		vertex x y z
+ *
+ * polygon information
+ * 		polygon number
+ *		surface number
+ *		number of vertices
+ *		list of vertex numbers
+ *
+ **********************************************************
+ * 
+ * object data file structure (implemented)
+ * 
+ * object type		0 = TBD  1 = TBD  2 = TBD
+ *
+ * vertex information
+ * 		vertex number
+ *			vertex number = 0 -> end-of-vertex-information
+ *		vertex x y z
+ *
+ * polygon information
+ *		surface number
+ * 		polygon number
+ *		number of vertices
+ *		list of vertex numbers
+ * 
+ * object color
+ *		rgb vector
+ *
  *********************************************************/
-bool ObjectScene::LoadObjectExt (char * fileName, char * objectName) {
-  	objectFile = fopen (fileName, "r");
+bool ObjectScene::LoadObject (char * fileName, char * objectName) {
+  	FILE * objectFile = fopen (fileName, "r");
   	if (objectFile == NULL) return true;
 
   	ObjectCell * currentObject = new ObjectCell (this);
 
-  	currentObject->idNo = objectCellList.size() + 1;
-  	cout << "currentObject->idNo= " << currentObject->idNo << endl;
-
   	currentObject->name = objectName;
-  	cout << "currentObject->name= " << currentObject->name << endl;
 
-   // read currentObject type
-  	fscanf (objectFile, "%d\n", &(currentObject->type));
+  	char mystring [MAX_STRING_LENGTH];
+  	
+   	// read currentObject type
+	if (getStringNoComments(objectFile, mystring)) {
+	  	sscanf (mystring, "%d", &(currentObject->type));
+  	}
 
-  	ReadVerticesExt (currentObject);
+  	ReadVertices (objectFile, currentObject);
 
-  	MakeSurfacesExt (currentObject);
+  	MakeSurfaces (objectFile, currentObject);
 
-   // read color
+   	// read color
   	DEV_COLOR aColor = DEV_COLOR (0, 180, 130);
-  	fscanf (objectFile, "%d\n", &(aColor.r));
-  	fscanf (objectFile, "%d\n", &(aColor.g));
-  	fscanf (objectFile, "%d\n", &(aColor.b));
+	if (getStringNoComments(objectFile, mystring)) {
+		sscanf (mystring, "%d %d %d", &aColor.r, &aColor.g, &aColor.b);
+	}
   	currentObject->devColor = aColor;
-  	cout << "currentObject->devColor (obj)= " << currentObject->devColor.r << endl;
-  	cout << "currentObject->devColor (obj)= " << currentObject->devColor.g << endl;
-  	cout << "currentObject->devColor (obj)= " << currentObject->devColor.b << endl;
 
 	// default transformation
   	currentObject->transformation.Identity();
@@ -466,42 +592,65 @@ bool ObjectScene::LoadObjectExt (char * fileName, char * objectName) {
 
 /**********************************************************
  * 
- * MakeSurfacesExt
+ * MakeSurfaces
  * 
  * parameters IN :
  *	ObjectCell * currentObject
  * 
  *********************************************************/
-void ObjectScene::MakeSurfacesExt (ObjectCell * currentObject)
+void ObjectScene::MakeSurfaces (FILE * ptrFile, ObjectCell * currentObject)
 {
     SurfaceCell * currentSurface;
-  	int surfaceId, currId = 0;
+  	int surfaceId, currSurfaceId = 0;
+  	int polygonId;
 	
-  	fscanf (objectFile, "%d", &surfaceId);
-    //?? cout << "MakeSurfacesExt: surfaceId= " << surfaceId << endl;
-		
-  	while (surfaceId != 0) {
-		if (currId != surfaceId) {
-            // nouvelle surface
-			currId = surfaceId;
- 			currentSurface = new SurfaceCell;
- 	  		currentObject->surfaceCellList.push_back (currentSurface);              // add to end of vector
+  	char mystring [MAX_STRING_LENGTH];
+  	char * ptr;
+  	int count;
+  	
+  	do {
+		if (getStringNoComments(ptrFile, mystring)) {
+		  	sscanf (mystring, "%d%n", &surfaceId, &count);
+  			ptr = mystring;
+			ptr += count;
 		}
+		
+ 		if (surfaceId != 0) {
+			if (currSurfaceId != surfaceId) {
+	            // nouvelle surface
+				currSurfaceId = surfaceId;
+	 			currentSurface = new SurfaceCell;
+	 	  		currentObject->surfaceCellList.push_back (currentSurface);		// add to end of vector
+	 	  		
+				if (currentObject->surfaceCellList.size() != surfaceId) {
+	  				char errString [MAX_STRING_LENGTH];
+					sprintf (errString, "Error Message: currentSurface (%d) != surfaceId (%d)", currentObject->surfaceCellList.size(), surfaceId);
+					cout << errString << endl;
+				}
+			}
+	
+		  	sscanf (ptr, "%d%n", &polygonId, &count);
+			ptr += count;
+			
+	  		PolygonCell * currentPolygon = new PolygonCell;
+		  	currentSurface->polygonCellList.push_back (currentPolygon);         // add to end of vector
 
-  		PolygonCell * currentPolygon = new PolygonCell;
-	  	currentSurface->polygonCellList.push_back (currentPolygon);              // add to end of vector
-
-        // read a polygon
-		ReadAPolygonExt (surfaceId, currentPolygon, currentObject);
-
- 	    fscanf (objectFile, "%d", &surfaceId);
-        //?? cout << "MakeSurfacesExt: surfaceId= " << surfaceId << endl;
-  	}
+			if (currentSurface->polygonCellList.size() != polygonId) {
+  				char errString [MAX_STRING_LENGTH];
+				sprintf (errString, "Error Message: currentPolygon (%d) != polygonId (%d)", currentSurface->polygonCellList.size(), polygonId);
+				cout << errString << endl;
+			}
+	
+	        // read a polygon
+			ReadAPolygon (ptr, surfaceId, currentPolygon, currentObject);
+		}
+		
+  	} while (surfaceId != 0);
 }
 
 /**********************************************************
  * 
- * ReadAPolygonExt
+ * ReadAPolygon
  * 
  * parameters IN :
  *	int surfaceId
@@ -509,18 +658,18 @@ void ObjectScene::MakeSurfacesExt (ObjectCell * currentObject)
  *	ObjectCell * currentObject
  * 
  *********************************************************/
-void ObjectScene::ReadAPolygonExt (int surfaceId, PolygonCell * currentPolygon, ObjectCell * currentObject)
+void ObjectScene::ReadAPolygon (char * ptr, int surfaceId, PolygonCell * currentPolygon, ObjectCell * currentObject)
 {
-  	int currentVertex, noVerticesInPolygon;
+  	int noVerticesInPolygon;
+  	int currentVertex, currentVertexIndex;
   	VertexList * vertexList;
   	VertexCell * tempVertex;
-  	int polygonId;
-
-  	fscanf (objectFile, "%d", &polygonId);					//++ added
+  	int count;
 
   	currentPolygon->vertexListHead = NULL;
   	
-  	fscanf (objectFile, " %d", &noVerticesInPolygon);
+  	sscanf (ptr, "%d%n", &noVerticesInPolygon, &count);
+	ptr += count;
 
   	for (int vertexCount = 1; vertexCount <= noVerticesInPolygon; vertexCount++) {
   	  	if (currentPolygon->vertexListHead == NULL)	{
@@ -531,28 +680,29 @@ void ObjectScene::ReadAPolygonExt (int surfaceId, PolygonCell * currentPolygon, 
   	  	  	vertexList = vertexList->next;
   	  	}
 
-  	  	fscanf (objectFile, " %d", &currentVertex);
+  	  	sscanf (ptr, "%d%n", &currentVertex, &count);
+		ptr += count;
 
-  	  	if (currentObject->surfaceAt[currentVertex - 1] == 0) {
-  	  	  	currentObject->surfaceAt[currentVertex - 1] = surfaceId;
-		} else {
-  	  	  	if (currentObject->surfaceAt[currentVertex - 1] != surfaceId) {
+		currentVertexIndex = currentVertex -1 ;
+		
+  	  	if (currentObject->surfaceAt[currentVertexIndex] == 0) {
+  	  		
+  	  	  	currentObject->surfaceAt[currentVertexIndex] = surfaceId;
+  	  	  	
+		} else if (currentObject->surfaceAt[currentVertexIndex] != surfaceId) {
 
-				currentObject->surfaceAt[currentVertex - 1] = surfaceId;
+			currentObject->surfaceAt[currentVertexIndex] = surfaceId;
 
-  	  	  	  	tempVertex = new VertexCell;
-				//?? cout << "tempVertex= " << tempVertex->localPos.GetX() << " " << tempVertex->localPos.GetY() << " " << tempVertex->localPos.GetZ() << endl;
-  	  	  	  	*tempVertex = *(currentObject->vertexAt[currentVertex - 1]);
-				//?? cout << "tempVertex= " << tempVertex->localPos.GetX() << " " << tempVertex->localPos.GetY() << " " << tempVertex->localPos.GetZ() << endl;
+  	  	  	tempVertex = new VertexCell;
+  	  	  	*tempVertex = *(currentObject->vertexAt[currentVertexIndex]);
 
-  	  	  	  	tempVertex->polyListHead = NULL;
+  	  	  	tempVertex->polyListHead = NULL;
 
-  	  			currentObject->vertexCellList.push_back (tempVertex);              // add to end of vector
-                //?? cout << "ReadAPolygon: add to vertexCellList -> vertexAt[ (currentVertex= " << currentVertex << ") - 1 ]" << endl;
-  	  	  	}
+  			currentObject->vertexCellList.push_back (tempVertex);              //?? add to end of vector
   	  	}
-  	  	vertexList->vertex = currentObject->vertexAt[currentVertex - 1];
-  	  	AddPolygonToPolygonListExt (currentPolygon, &(vertexList->vertex->polyListHead));
+  	  	
+  	  	vertexList->vertex = currentObject->vertexAt[currentVertexIndex];
+  	  	AddPolygonToPolygonList (currentPolygon, &(vertexList->vertex->polyListHead));
 	}
 
   	vertexList->next = NULL;					// original code
@@ -560,70 +710,78 @@ void ObjectScene::ReadAPolygonExt (int surfaceId, PolygonCell * currentPolygon, 
 
 /**********************************************************
  * 
- * AddPolygonToPolygonListExt
+ * AddPolygonToPolygonList
  * 
  * parameters IN :
  *	PolygonCell * currentPolygon
  *	PolygonList ** polyList
  * 
- * return value : int
+ * return value : bool
+ *					true if error
  * 
  *********************************************************/
-int ObjectScene::AddPolygonToPolygonListExt (PolygonCell * currentPolygon, PolygonList ** polyList)
+bool ObjectScene::AddPolygonToPolygonList (PolygonCell * currentPolygon, PolygonList ** polyList)
 {
   	if (*polyList == NULL) {
   	  	*polyList = new PolygonList;
-  	  	if (*polyList == NULL) return 1;			//++ added
+  	  	if (*polyList == NULL) return true;			//++ added
   	  	(*polyList)->poly = currentPolygon;
   	  	(*polyList)->next = NULL;
   	} else {
-  	  	AddPolygonToPolygonListExt (currentPolygon, &((*polyList)->next));
+  	  	AddPolygonToPolygonList (currentPolygon, &((*polyList)->next));
 	}
 
-	return 0;
+	return false;
 }
 
 /**********************************************************
  * 
- * ReadVerticesExt
+ * ReadVertices
  * 
  * parameters IN :
  *	ObjectCell * currentObject
  * 
  *********************************************************/
-void ObjectScene::ReadVerticesExt (ObjectCell * currentObject) {
+void ObjectScene::ReadVertices (FILE * ptrFile, ObjectCell * currentObject) {
   	int vertexId;
-  	double temp;
+  	double tempX, tempY, tempZ;
 
-  	fscanf (objectFile, "%d", &vertexId);
-    //?? cout << "ReadVerticesExt: vertexId= " << vertexId << endl;
+  	char mystring [MAX_STRING_LENGTH];
+  	char * ptr;
+  	int count;
+  	
+  	do {
+		if (getStringNoComments(ptrFile, mystring)) {
+		  	sscanf (mystring, "%d%n", &vertexId, &count);
+  			ptr = mystring;
+			ptr += count;
+		}
 		
-  	while (vertexId != 0) {
-	      VertexCell * currentVertex = new VertexCell;
-	      
-  	  	fscanf (objectFile, " %lf", &temp);       // %lf pour double
-  	  	currentVertex->localPos.SetX (temp);
-  	  	fscanf (objectFile, " %lf", &temp);
-  	  	currentVertex->localPos.SetY (temp);
-  	  	fscanf (objectFile, " %lf\n", &temp);
-  	  	currentVertex->localPos.SetZ (temp);
-		//?? cout << "currentVertex->localPos= " << currentVertex->localPos.GetX() << " , " << currentVertex->localPos.GetY() << " , " << currentVertex->localPos.GetZ() << endl;
+ 		if (vertexId != 0) {
+		    VertexCell * currentVertex = new VertexCell;
 
-  	  	currentVertex->polyListHead = NULL;
-
-  	  	// add point to vertexAt[]
-		currentObject->vertexAt.push_back (currentVertex);
-        //?? cout << "ReadVerticesExt: add to vertexAt[ " << currentObject->vertexAt.size() - 1 << " ]" << endl;
-
-		// add point to vertexCellList
-		currentObject->vertexCellList.push_back (currentVertex);
-    	//?? cout << "ReadVerticesExt: add to vertexCellList -> vertexAt[] = " << currentVertex << endl;
-
-  	      currentObject->surfaceAt [currentObject->vertexCellList.size() - 1] = 0;
-  	      //?? currentObject->surfaceAt [currentObject->vertexCellList.size() - 1] = 0;
+	  	  	sscanf (ptr, "%lf %lf %lf", &tempX, &tempY, &tempZ);       // %lf pour double
+	  	  	currentVertex->localPos.SetX (tempX);
+	  	  	currentVertex->localPos.SetY (tempY);
+	  	  	currentVertex->localPos.SetZ (tempZ);
+	
+	  	  	currentVertex->polyListHead = NULL;
+	
+			// add point to vertexCellList
+			currentObject->vertexCellList.push_back (currentVertex);
+			
+			if (currentObject->vertexCellList.size() != vertexId) {
+  				char errString [MAX_STRING_LENGTH];
+				sprintf (errString, "currentVertex (%d) != vertexId (%d)", currentObject->vertexCellList.size(), vertexId);
+				MessageBox (NULL, errString, "Error Message", MB_OK || MB_ICONERROR);
+			}
+	
+	  	  	// add point to vertexAt[]
+			currentObject->vertexAt.push_back (currentVertex);
+	
+	  	    currentObject->surfaceAt [currentObject->vertexCellList.size() - 1] = 0;
+		}
 		
-  	    fscanf (objectFile, "%d", &vertexId);
-        //?? cout << "ReadVerticesExt: vertexId= " << vertexId << endl;
- 	}
+ 	} while (vertexId != 0);
 }
 

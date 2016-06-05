@@ -24,16 +24,16 @@ const string DEFAULT_INI = "wireframe.ini";
 
 class ObjectScene {
 private:
-    FILE * sceneFile;
-    FILE * objectFile;
-
     void SetViewTransformation();
 	void CalculateScreenCoordinates();
 
-	void MakeSurfacesExt (ObjectCell *);
-	void ReadAPolygonExt (int, PolygonCell *, ObjectCell *);
-	int AddPolygonToPolygonListExt (PolygonCell *, PolygonList **);
-	void ReadVerticesExt (ObjectCell *);
+	void MakeSurfaces (FILE * ptrFile, ObjectCell *);
+	void ReadAPolygon (char *, int, PolygonCell *, ObjectCell *);
+	bool AddPolygonToPolygonList (PolygonCell *, PolygonList **);
+	void ReadVertices (FILE * ptrFile, ObjectCell *);
+	
+	bool getStringNoComments(FILE * ptrFile, char * s);
+	void removeSpaces (char * s);
 
 public:
     MapRec	     mapOffsets;
@@ -50,7 +50,7 @@ public:
 	void WireFrameScene (HWND);
 	void TransformScene();
     bool LoadScene (HWND, char *, char *);
-    bool LoadObjectExt (char *, char *);
+    bool LoadObject (char *, char *);
 };
 
 #endif   // OBJECT_SCENE_H

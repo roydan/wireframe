@@ -7,6 +7,7 @@
 #include "Util.h"
 
 /**********************************************************
+ * 
  * ObjectCell
  * 
  * constructeur
@@ -17,6 +18,7 @@
  * 	ObjectScene * ptrScene
  * 
  * return value : ObjectCell *
+ * 
  *********************************************************/
 ObjectCell::ObjectCell (ObjectScene * ptrScene) {
     this->ptrScene = ptrScene;
@@ -191,13 +193,13 @@ void ObjectCell::TransformToWorldCoordinates() {
 }
 
 /**********************************************************
+ * 
  * GetTransformation
  * 
  * parameters IN :
  *	int transType
  *	MyVector transVector
  * 
- * return value : none
  *********************************************************/
 void ObjectCell::GetTransformation (int transType, MyVector transVector) {
   	MyMatrix transMatrix;

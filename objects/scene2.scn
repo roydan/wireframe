@@ -1,60 +1,118 @@
+! view distance
 2000
+! rho
 2000
+! theta
 45
+! phi
 75
+! draw vertex normals
 0
-1
+!
+! object data filename
 axes2.obj
+! object transformations
+! scale vector
 1 1 1
+! rotate vector
 0 0 0
+! translate vector
 0 0 0
+! object color
 255 0 0
-2
+!
+! object data filename
 axes2.obj
+! object transformations
+! scale vector
 1 1 1
+! rotate vector
 0 0 90
+! translate vector
 0 0 0
+! object color
 0 255 0
-3
+!
+! object data filename
 axes2.obj
+! object transformations
+! scale vector
 1   1 1
+! rotate vector
 0 -90 0
+! translate vector
 0   0 0
+! object color
 0 0 255
-4
+!
+! object data filename
 carreau.obj
+! object transformations
+! scale vector
 2 2 2
+! rotate vector
 0 0 0
+! translate vector
 -200 -200 0
+! object color
 0 0 0
-5
+!
+! object data filename
 carreau.obj
+! object transformations
+! scale vector
 2 2 2
+! rotate vector
 0 0 0
+! translate vector
 -200 +200 0
+! object color
 200 200 0
-6
+!
+! object data filename
 carreau.obj
+! object transformations
+! scale vector
 2 2 2
+! rotate vector
 0 0 0
+! translate vector
 +200 -200 0
+! object color
 200 0 200
-7
+!
+! object data filename
 carreau.obj
+! object transformations
+! scale vector
 2 2 2
+! rotate vector
 0 0 0
+! translate vector
 +200 +200 0
+! object color
 200 200 200
-8
+!
+! object data filename
 cylinder.obj
+! object transformations
+! scale vector
 1 1 1
+! rotate vector
 0 0 0
+! translate vector
 200 300 100
+! object color
 0 0 0
-9
+!
+! object data filename
 teapot.obj
+! object transformations
+! scale vector
 16 16 16
+! rotate vector
 10 10 10
+! translate vector
 -100 -100 100
+! object color
 0 0 0
-0

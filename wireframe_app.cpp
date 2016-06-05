@@ -15,7 +15,6 @@ extern ObjectScene * ptrScene;
 LRESULT CALLBACK WndProc (HWND, UINT, WPARAM, LPARAM);
 
 /**********************************************************
- * WinMain
  * 
  * WinMain
  * 
@@ -26,6 +25,7 @@ LRESULT CALLBACK WndProc (HWND, UINT, WPARAM, LPARAM);
  *	int iCmdShow
  * 
  * return value : int
+ * 
  *********************************************************/
 int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
                    PSTR szCmdLine, int iCmdShow)
@@ -71,7 +71,6 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
 }
 
 /**********************************************************
- * WndProc
  * 
  * WndProc
  * 
@@ -102,6 +101,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
  *	LPARAM lParam
  * 
  * return value : LRESULT
+ * 
  *********************************************************/
 LRESULT CALLBACK WndProc (HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam) {
   	switch (iMsg) {
@@ -123,7 +123,6 @@ LRESULT CALLBACK WndProc (HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam) {
                	{
 				    WireframeFunction (WIREFRAME_WM_DESTROY, 0, 0, 0);
 				    WireframeFunction (WIREFRAME_WM_CREATE, hWnd, 0, 0);
-
 					RefreshScreen (hWnd);
 					return 0;
            		}
@@ -233,28 +232,24 @@ LRESULT CALLBACK WndProc (HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam) {
 }
 
 /**********************************************************
- * RefreshScreen
  * 
  * RefreshScreen
  * 
  * parameters IN:
  * 	HWND hWnd
  * 
- * return value : void
  *********************************************************/
 void RefreshScreen (HWND hWnd) {
     InvalidateRect (hWnd, NULL, TRUE);
 }
 
 /**********************************************************
- * DrawVertexNormalsCtrl
  * 
  * DrawVertexNormalsCtrl
  * 
  * parameters IN:
  * 	HWND hWnd
  * 
- * return value : void
  *********************************************************/
 void DrawVertexNormalsCtrl (HWND hWnd) {
     UINT uCheck = MF_UNCHECKED;
@@ -263,15 +258,10 @@ void DrawVertexNormalsCtrl (HWND hWnd) {
 }
 
 /**********************************************************
- * TestSub
  * 
  * TestSub
  * static
  * 
- * parameters IN:
- * 	void
- * 
- * return value : void
  *********************************************************/
 static void TestSub (void) {
 	cout << "TestSub" << endl;
@@ -362,3 +352,4 @@ static void TestSub (void) {
 	cout << endl;
 	//**********************************/
 }
+

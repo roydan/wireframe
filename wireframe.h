@@ -5,21 +5,10 @@
  * v120
  * 31/05/2012
  *
- * files modified:
- *
  ********************************************************************************
  *
  * v110
  * 23/05/2012
- *
- * files modified:
- * 21/05/2012	ObjectScene.h / .cpp / .o
- * 21/05/2012	wireframe_app.cpp
- * 21/05/2012	wireframe.cpp
- * 21/05/2012	Matrix4.cpp
- * 21/05/2012	renderer.cpp
- * 21/05/2012	MyMatrix.cpp
- * 23/05/2012	ObjectCell.h / .cpp / .o
  *
  ********************************************************************************
  *
@@ -51,10 +40,11 @@
 // prototypes
 
 int WireframeFunction (int, HWND, WPARAM, LPARAM);
-INT_PTR CALLBACK TransformationDlgProc (HWND, UINT, WPARAM, LPARAM);		//?? FROM BOOL TO INT_PTR
+INT_PTR CALLBACK TransformationDlgProc (HWND, UINT, WPARAM, LPARAM);
 void InitTransformationDlg(HWND, MyVector *, MyVector *, MyVector *);
-INT_PTR CALLBACK ViewRefPointDlgProc (HWND, UINT, WPARAM, LPARAM);			//?? FROM BOOL TO INT_PTR
+INT_PTR CALLBACK ViewRefPointDlgProc (HWND, UINT, WPARAM, LPARAM);
 void InitViewRefPointDlg(HWND, ViewPointRec *);
-INT_PTR CALLBACK AboutBoxDlgProc (HWND, UINT, WPARAM, LPARAM);				//?? FROM BOOL TO INT_PTR
+INT_PTR CALLBACK AboutBoxDlgProc (HWND, UINT, WPARAM, LPARAM);
 
 #endif   // WIREFRAME_H
+

@@ -143,14 +143,13 @@ void MyMatrix::SetValue (int row, int col, double value) {
  * operator <<
  * 
  * parameters IN :
- *	ostream &os
- *	const MyMatrix &m
+ *	ostream & os
+ *	const MyMatrix & m
  * 
  * return value : ostream &
  * 
  *********************************************************/
-ostream& operator << (ostream & os, const MyMatrix & m) {
-	//?? os << setprecision (8) << setiosflags (ios::right | ios::showpoint);
+ostream & operator << (ostream & os, const MyMatrix & m) {
   	for (int i = 0; i < MATRIX_SIZE; i++) {
   	  	for (int j = 0; j < MATRIX_SIZE; j++) {
 			os << setw(8) << m[i][j];
@@ -159,3 +158,4 @@ ostream& operator << (ostream & os, const MyMatrix & m) {
 	}
 	return os;
 }
+

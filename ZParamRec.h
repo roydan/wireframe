@@ -14,7 +14,7 @@ private:
   	
 public:
 	ZParamRec (double zMin = 0., double zMax = 0., double zRange = 0.);
-    void operator = (const ZParamRec & another);
+    void operator = (const ZParamRec & value);
 
   	double GetZMin() { return zMin; }
     double GetZMax() { return zMax; }
@@ -25,3 +25,4 @@ public:
 };
 
 #endif   // ZPARAM_REC_H
+

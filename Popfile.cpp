@@ -11,12 +11,12 @@
 #include "popfile.h"
 
 /**********************************************************
+ * 
  * PopFileInit
  * 
  * parameters IN:
  * 	HWND hwnd
  * 
- * return value : none
  *********************************************************/
 void FileStruct::PopFileInit (HWND hwnd)
 {
@@ -43,6 +43,7 @@ void FileStruct::PopFileInit (HWND hwnd)
 }
 
 /**********************************************************
+ * 
  * PopFileOpen
  * 
  * parameters IN:
@@ -51,7 +52,9 @@ void FileStruct::PopFileInit (HWND hwnd)
  * 	PSTR pstrTitleName
  * 
  * return value : BOOL
+ * 
  **********************************************************
+ * 
  * If the user specifies a file name and clicks the OK button, the return value
  * is nonzero. The buffer pointed to by the lpstrFile member of the OPENFILENAME
  * structure contains the full path and file name specified by the user.
@@ -149,3 +152,4 @@ bool PopFileWrite (HWND hwndEdit, PSTR pstrFileName)
     return true;
 }
 **********************************************************/
+

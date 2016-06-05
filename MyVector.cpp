@@ -120,13 +120,13 @@ void MyVector::VectorMatrix (MyMatrix m) {
  * operator <<
  * 
  * parameters IN :
- *	ostream &os
- *	const MyVector &v
+ *	ostream & os
+ *	const MyVector & v
  * 
  * return value : ostream &
  * 
  *********************************************************/
-ostream& operator << (ostream & os, const MyVector & v) {
+ostream & operator << (ostream & os, const MyVector & v) {
 	os << "[ " << v.GetX() << " , " << v.GetY() << " , " << v.GetZ() << " ]" << endl;
 	return os;
 }
