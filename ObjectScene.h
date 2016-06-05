@@ -43,6 +43,7 @@ public:
     bool         drawVertexNormals;
     ZParamRec    zParams;
     bool         sceneChanged;
+    RECT		 scnRect;
 
 	ObjectScene (HWND hWnd);
 

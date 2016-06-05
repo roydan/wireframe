@@ -6,6 +6,7 @@
 
 #include "ObjectCell.h"
 #include "MyVector.h"
+#include "graphics3d.h"
 
 /**********************************************************
  *
@@ -20,7 +21,7 @@ public:
   	EdgeBox * next;
 };
 
-void RenderScene (HWND, vector<ObjectCell *>);
+void RenderScene (HWND, ObjectScene *);
 void initializeZBuffer();
 void RenderObject (ObjectCell *);
 void RenderPolygon (PolygonCell *);
@@ -31,3 +32,4 @@ double woodGrain (MyVector);
 double arcTangent (double, double);
 
 #endif   // RENDERER_H
+

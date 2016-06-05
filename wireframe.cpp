@@ -157,7 +157,7 @@ int WireframeFunction (int iMsg, HWND hWnd, WPARAM wParam, LPARAM lParam) {
         {
 			// Render Scene
 			if (ptrScene->objectCellList.size() > 0) {
-				RenderScene (hWnd, ptrScene->objectCellList);
+				RenderScene (hWnd, ptrScene);
 			} else {
   	  	    	MessageBox (NULL, "No objects currently loaded", NULL, MB_OK);
 			}

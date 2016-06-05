@@ -6,3 +6,5 @@
 Makefile.win
 *.layout
 *_private.*
+
+*.ini

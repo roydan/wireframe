@@ -8,6 +8,7 @@
 #include "renderer.h"
 #include "MyVector.h"
 #include "graphics3d.h"
+#include "ObjectScene.h"
 #include "ObjectCell.h"
 #include "ZParamRec.h"
 #include "Util.h"
@@ -24,6 +25,7 @@ HWND   ghWnd;
 EdgeBox * edgeListAt[DEV_MAX_Y_RES + 1];
 int    zBufferAt[DEV_MAX_X_RES + 1][DEV_MAX_Y_RES + 1];
 MyVector lightVector;
+RECT   scnRect;
 
 /**********************************************************
  * 
@@ -34,11 +36,15 @@ MyVector lightVector;
  *	vector<ObjectCell *> objectCellList
  * 
  *********************************************************/
-void RenderScene (HWND hWnd, vector<ObjectCell *> objectCellList) {
+void RenderScene (HWND hWnd, ObjectScene * ptrScene) {
   	ghWnd = hWnd;
 
-  	initializeZBuffer();
+	vector<ObjectCell *> objectCellList = ptrScene->objectCellList;
 
+	scnRect = ptrScene->scnRect;
+	
+  	initializeZBuffer();
+  	
   	MyVector lightVector(2, -3, 2);
 
   	lightVector.Normalize();
@@ -58,8 +64,8 @@ void initializeZBuffer()
 {
   	int x, y;
 
-  	for (x = 0; x <= DEV_MAX_X_RES; x++) {
-  	  	for (y = 0; y <= DEV_MAX_Y_RES; y++) {
+  	for (x = 0; x <= scnRect.right; x++) {			//?? DEV_MAX_X_RES
+  	  	for (y = 0; y <= scnRect.bottom; y++) {		//?? DEV_MAX_Y_RES
 		  	zBufferAt[x][y] = DEV_MAX_Z_RES;
 		}
 	}
@@ -71,21 +77,29 @@ void initializeZBuffer()
  * 
  * parameters IN:
  *	ObjectCell * currentObject
- * 
+ *
+ * OBJECT_AXIS    	
+ * OBJECT_SURFACE 	
+ * OBJECT_PATCH 	bicubic Bezier patches
+ *
  *********************************************************/
 void RenderObject (ObjectCell * currentObject)
 {
-    for (vector<SurfaceCell *>::iterator it = currentObject->surfaceCellList.begin(); it != currentObject->surfaceCellList.end(); ++it) {
-  	    SurfaceCell * currentSurface = *it;
-
-       	for (vector<PolygonCell *>::iterator it = currentSurface->polygonCellList.begin(); it != currentSurface->polygonCellList.end(); ++it) {
-  	        PolygonCell * currentPolygon = *it;
-
-  	  	  	if (currentPolygon->polyVisible) {
-  	  	    	RenderPolygon (currentPolygon);
+	if (currentObject->type == OBJECT_SURFACE) {
+		
+	    for (vector<SurfaceCell *>::iterator it = currentObject->surfaceCellList.begin(); it != currentObject->surfaceCellList.end(); ++it) {
+	  	    SurfaceCell * currentSurface = *it;
+	
+	       	for (vector<PolygonCell *>::iterator it = currentSurface->polygonCellList.begin(); it != currentSurface->polygonCellList.end(); ++it) {
+	  	        PolygonCell * currentPolygon = *it;
+	
+	  	  	  	if (currentPolygon->polyVisible) {
+	  	  	    	RenderPolygon (currentPolygon);
+				}
 			}
-		}
-  	}
+	  	}
+	  	
+	}
 }
 
 /**********************************************************
@@ -100,7 +114,7 @@ void RenderPolygon (PolygonCell * currentPolygon)
 {
   	int y;
 
-  	for (y = 0; y <= DEV_MAX_Y_RES; y++) {
+  	for (y = 0; y <= scnRect.bottom; y++) {		//?? DEV_MAX_Y_RES
 		edgeListAt[y] = NULL;
 	}
 
@@ -116,7 +130,7 @@ void RenderPolygon (PolygonCell * currentPolygon)
 
   	AddEdgeToList (vertex1->vertex, vertex0->vertex);
 
-  	for (y = 0; y <= DEV_MAX_Y_RES; y++) {
+  	for (y = 0; y <= 100; y++) {		//?? scnRect.bottom		DEV_MAX_Y_RES
 		if (edgeListAt[y] != NULL) {
 		  	RenderSpan (y, &edgeListAt[y], &edgeListAt[y]->next);
 		}

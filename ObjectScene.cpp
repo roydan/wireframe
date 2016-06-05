@@ -29,10 +29,9 @@ const double HIGH_DOUBLE = 1.E30;
  * 
  *********************************************************/
 ObjectScene::ObjectScene (HWND hWnd) {
-  	RECT rect;
-  	GetClientRect (hWnd, &rect);
-	int xMid = (int)((rect.right - rect.left) / 2);
-	int yMid = (int)((rect.bottom - rect.top) / 2);
+  	GetClientRect (hWnd, &scnRect);
+	int xMid = (int)((scnRect.right - scnRect.left) / 2);
+	int yMid = (int)((scnRect.bottom - scnRect.top) / 2);
 	mapOffsets = MapRec (xMid, yMid);
 
 	char strDefault [MAX_STRING_LENGTH];
@@ -677,7 +676,14 @@ void ObjectScene::ReadAPolygon (char * ptr, int surfaceId, PolygonCell * current
 
   	  	  	tempVertex->polyListHead = NULL;
 
-  			currentObject->vertexCellList.push_back (tempVertex);              //?? add to end of vector
+			//*******************************************
+			// add to end of vector
+  			//?? currentObject->vertexCellList.push_back (tempVertex);
+			//*******************************************
+			// add to start of vector
+			vector<VertexCell *>::iterator it = currentObject->vertexCellList.begin();
+			it = currentObject->vertexCellList.insert (it, tempVertex);
+			//*******************************************
   	  	}
   	  	
   	  	vertexList->vertex = currentObject->vertexAt[currentVertexIndex];
@@ -758,7 +764,7 @@ void ObjectScene::ReadVertices (FILE * ptrFile, ObjectCell * currentObject) {
 	  	  	// add point to vertexAt[]
 			currentObject->vertexAt.push_back (currentVertex);
 	
-	  	    currentObject->surfaceAt [currentObject->vertexCellList.size() - 1] = 0;
+	  	    currentObject->surfaceAt [vertexId - 1] = 0;
 		}
 		
  	} while (vertexId != 0);
