@@ -1,0 +1,30 @@
+! object type
+0
+! vertex information
+! vertex number, vertex xyz
+1    0    0    0
+2 +100    0    0
+3    0    0    0
+4    0 +100    0
+5    0    0    0
+6    0    0 +100
+! vertex number = 0
+! end-of-vertex-information
+0
+!
+! polygon information
+! polygon number
+! surface number
+! number of vertices
+! list of vertex numbers
+!
+! NO POLYGONS
+!
+! polygon number = 0
+! end-of-polygon-information
+0
+! object color
+!
+! NO COLOR
+!
+! end-of-file

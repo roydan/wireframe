@@ -1,0 +1,39 @@
+! object type
+1
+! vertex information
+! vertex number, vertex xyz
+1     0 -150 +100
+2  +100 -100 +100
+3  +100 +100 +100
+4     0 +150 +100
+5  -100 +100 +100
+6  -100 -100 +100
+7     0 -150 -100
+8  +100 -100 -100
+9  +100 +100 -100
+10    0 +150 -100
+11 -100 +100 -100
+12 -100 -100 -100
+! vertex number = 0
+! end-of-vertex-information
+0
+!
+! polygon information
+! polygon number
+! surface number
+! number of vertices
+! list of vertex numbers
+1  1  4  1  7  8  2
+2  1  4  2  8  9  3
+3  1  4  3  9 10  4
+4  1  4  4 10 11  5
+5  1  4  5 11 12  6
+6  1  4  6 12  7  1
+7  2  6  1  2  3  4  5  6
+8  3  6 12 11 10  9  8  7
+! polygon number = 0
+! end-of-polygon-information
+0
+! object color
+120 180 130
+! end-of-file

@@ -1,6 +1,5 @@
 # Compiled Object files
 *.o
-*.obj
 
 # project
 Makefile.win
